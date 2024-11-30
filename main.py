@@ -32,9 +32,29 @@ def replace_mistakes(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def time_of_day(hour: int, minutes: int) -> str:
+    if 360 <= (hour * 60) + minutes <= 599:  # 06:00 - 09:59
+        return "Утро"
+    elif 600 <= (hour * 60) + minutes <= 1019:  # 10:00 - 16:59
+        return "День"
+    elif 1020 <= (hour * 60) + minutes <= 1319:  # 17:00 - 21:59
+        return "Вечер"
+    else:
+        return "Ночь"
+
+
+def new_columns(df: pd.DataFrame) -> pd.DataFrame:
+    df['session_date'] = pd.to_datetime(df['session_date'], format='%Y-%m-%d')  # Привождение к правильному формату
+    df['session_start'] = pd.to_datetime(df['session_start'], format='%Y-%m-%d %H:%M:%S')  # Привождение к правильному формату
+    df['session_end'] = pd.to_datetime(df['session_end'], format='%Y-%m-%d %H:%M:%S')  # Привождение к правильному формату
+    df["time_of_day"] = df["session_start"].apply(lambda x: time_of_day(x.hour, x.minute))  # Создание нового столбца и его заполнение
+    return df
+
+
 df = pd.read_csv("./data/data.csv", encoding="utf-8", sep=",")
 df.columns = df.columns.str.lower().str.replace(" ", "_")
 df = replace_mistakes(df)
+df = new_columns(df)
 df = fill_errors(df, "revenue", "median")
 df["revenue"] = df["revenue"].fillna(0)
 df["bought"] = df["revenue"].map(lambda x: "yes" if x != 0 else "no")
