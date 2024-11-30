@@ -32,12 +32,12 @@ def replace_mistakes(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def time_of_day(hours: int, minutes: int) -> str:
-    if 360 <= (hours * 60) + minutes <= 599:  # 06:00 - 09:59
+def time_of_day(hours: int) -> str:
+    if 360 <= (hours * 60) <= 599:  # 06:00 - 09:59
         return "Утро"
-    elif 600 <= (hours * 60) + minutes <= 1019:  # 10:00 - 16:59
+    elif 600 <= (hours * 60) <= 1019:  # 10:00 - 16:59
         return "День"
-    elif 1020 <= (hours * 60) + minutes <= 1319:  # 17:00 - 21:59
+    elif 1020 <= (hours * 60) <= 1319:  # 17:00 - 21:59
         return "Вечер"
     else:
         return "Ночь"
@@ -47,7 +47,7 @@ def to_time_columns(df: pd.DataFrame) -> pd.DataFrame:
     df['session_date'] = pd.to_datetime(df['session_date'], format='%Y-%m-%d')  # Приведение к правильному формату
     df['session_start'] = pd.to_datetime(df['session_start'], format='%Y-%m-%d %H:%M:%S')
     df['session_end'] = pd.to_datetime(df['session_end'], format='%Y-%m-%d %H:%M:%S')
-    df["time_of_day"] = df["session_start"].apply(lambda x: time_of_day(x.hour, x.minute))
+    df["time_of_day"] = df["hour_of_day"].apply(time_of_day)
     return df
 
 
@@ -71,6 +71,7 @@ df.columns = df.columns.str.lower().str.replace(" ", "_")
 df = replace_mistakes(df)
 df = to_time_columns(df)
 df = fill_all_errors(df)
+df["promo_code"] = df["promo_code"].fillna(0)
 df["revenue"] = df["revenue"].fillna(0)
 df["payer"] = df["revenue"].map(lambda x: "yes" if x != 0 else "no")
 # print(df.head())
