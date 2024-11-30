@@ -44,10 +44,12 @@ def time_of_day(hour: int, minutes: int) -> str:
 
 
 def new_columns(df: pd.DataFrame) -> pd.DataFrame:
-    df['session_date'] = pd.to_datetime(df['session_date'], format='%Y-%m-%d')  # Привождение к правильному формату
-    df['session_start'] = pd.to_datetime(df['session_start'], format='%Y-%m-%d %H:%M:%S')  # Привождение к правильному формату
-    df['session_end'] = pd.to_datetime(df['session_end'], format='%Y-%m-%d %H:%M:%S')  # Привождение к правильному формату
+    df['session_date'] = pd.to_datetime(df['session_date'], format='%Y-%m-%d')  # Приведение к правильному формату
+    df['session_start'] = pd.to_datetime(df['session_start'], format='%Y-%m-%d %H:%M:%S')  # Приведение к правильному формату
+    df['session_end'] = pd.to_datetime(df['session_end'], format='%Y-%m-%d %H:%M:%S')  # Приведение к правильному формату
     df["time_of_day"] = df["session_start"].apply(lambda x: time_of_day(x.hour, x.minute))  # Создание нового столбца и его заполнение
+    df["total_cost"] = df.apply(lambda row: row["revenue"] if row["promo_code"] != 1 else row["revenue"] * 0.9, axis=1)
+    df["total_cost"] = df["total_cost"].fillna(0)
     return df
 
 
@@ -86,7 +88,6 @@ print(df.head())
 #     except:
 #         ...
 # data not normal(( -> fill
-
 
 
 # mode, because the data is categorical
