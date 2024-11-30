@@ -1,3 +1,4 @@
+import numpy
 import pandas as pd
 import seaborn as sns
 import numpy as np
@@ -35,13 +36,16 @@ df = pd.read_csv("./data/data.csv", encoding="utf-8", sep=",")
 df.columns = df.columns.str.lower().str.replace(" ", "_")
 df = replace_mistakes(df)
 df = fill_errors(df, "revenue", "median")
-# print(df.head().T)
+df["revenue"] = df["revenue"].fillna(0)
+df["bought"] = df["revenue"].map(lambda x: "yes" if x != 0 else "no")
+print(df.head())
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4))
-sns.boxplot(df.dropna(), x="region", y="revenue", ax=ax1)
-sns.boxplot(fill_na(df, "region", "mode", group=["region"]), x="region", y="revenue", ax=ax2)
-
-plt.show()
+# fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(11, 4))
+# sns.scatterplot(df[df["bought"] == "yes"].dropna(), x="region", y="sessiondurationsec", ax=ax1)
+# sns.scatterplot(fill_na(df[df["bought"] == "yes"], "region", "mode"), x="region", y="sessiondurationsec", ax=ax2)
+# sns.scatterplot(df.fillna({"region": "other"}), x="region", y="sessiondurationsec", ax=ax3)
+#
+# plt.show()
 
 
 # print((df.isna().sum() / len(df)).round(4) * 100)

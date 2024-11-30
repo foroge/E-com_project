@@ -10,10 +10,21 @@ def fill_na(data: pd.DataFrame | pd.Series, column: str, method: str, group: lis
     :return: modified data
     """
     match method:
-        case "mean" | "median":
-            data[column].fillna(data.groupby(group)[column].transform(method), inplace=True)
+        case "median":
+            if group:
+                data[column].fillna(data.groupby(group)[column].transform(method), inplace=True)
+            else:
+                data[column].fillna(data[column].median(), inplace=True)
+        case "mean":
+            if group:
+                data[column].fillna(data.groupby(group)[column].transform(method), inplace=True)
+            else:
+                data[column].fillna(data[column].mean(), inplace=True)
         case "mode":
-            data[column].fillna(data.groupby(group)[column].transform(lambda x: x.mode()[0]), inplace=True)
+            if group:
+                data[column].fillna(data.groupby(group)[column].transform(lambda x: x.mode().values[0]), inplace=True)
+            else:
+                data[column] = data[column].fillna(data[column].mode().values[0])
         case "back":
             data[column] = data[column].bfill()
         case "interpolate":
@@ -44,7 +55,7 @@ def fill_errors(df: pd.DataFrame, columns: str | list[str], fill_with: str, err_
             case "mean":
                 med = df[col].mean()
             case "mode":
-                med = df[col].mode()
+                med = df[col].mode()[0]
             case "drop":
                 df[col] = df[err_max > df[col] > err_min][col]
                 continue
