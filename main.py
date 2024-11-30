@@ -32,42 +32,50 @@ def replace_mistakes(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def time_of_day(hour: int, minutes: int) -> str:
-    if 360 <= (hour * 60) + minutes <= 599:  # 06:00 - 09:59
+def time_of_day(hours: int, minutes: int) -> str:
+    if 360 <= (hours * 60) + minutes <= 599:  # 06:00 - 09:59
         return "Утро"
-    elif 600 <= (hour * 60) + minutes <= 1019:  # 10:00 - 16:59
+    elif 600 <= (hours * 60) + minutes <= 1019:  # 10:00 - 16:59
         return "День"
-    elif 1020 <= (hour * 60) + minutes <= 1319:  # 17:00 - 21:59
+    elif 1020 <= (hours * 60) + minutes <= 1319:  # 17:00 - 21:59
         return "Вечер"
     else:
         return "Ночь"
 
 
-def new_columns(df: pd.DataFrame) -> pd.DataFrame:
+def to_time_columns(df: pd.DataFrame) -> pd.DataFrame:
     df['session_date'] = pd.to_datetime(df['session_date'], format='%Y-%m-%d')  # Приведение к правильному формату
-    df['session_start'] = pd.to_datetime(df['session_start'], format='%Y-%m-%d %H:%M:%S')  # Приведение к правильному формату
-    df['session_end'] = pd.to_datetime(df['session_end'], format='%Y-%m-%d %H:%M:%S')  # Приведение к правильному формату
-    df["time_of_day"] = df["session_start"].apply(lambda x: time_of_day(x.hour, x.minute))  # Создание нового столбца и его заполнение
-    df["total_cost"] = df.apply(lambda row: row["revenue"] if row["promo_code"] != 1 else row["revenue"] * 0.9, axis=1)
-    df["total_cost"] = df["total_cost"].fillna(0)
+    df['session_start'] = pd.to_datetime(df['session_start'], format='%Y-%m-%d %H:%M:%S')
+    df['session_end'] = pd.to_datetime(df['session_end'], format='%Y-%m-%d %H:%M:%S')
+    df["time_of_day"] = df["session_start"].apply(lambda x: time_of_day(x.hour, x.minute))
     return df
+
+
+def fill_all_errors(df: pd.DataFrame) -> pd.DataFrame:
+    df = fill_errors(df, "sessiondurationsec", "median")
+    df = fill_errors(df, "revenue", "median")
+    return df
+
+
+def plot_corr_with_nans(df, x, y, payer="yes") -> None:
+    if payer:
+        df = df[df[payer] == payer]
+    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(14, 4))
+    sns.boxplot(df.dropna(), x=x, y=y, ax=ax1)
+    sns.boxplot(fill_na(df, y, "median"), x=x, y=y, ax=ax2)
+    sns.boxplot(df.fillna({"region": "other"}), x=x, y=y, ax=ax3)
 
 
 df = pd.read_csv("./data/data.csv", encoding="utf-8", sep=",")
 df.columns = df.columns.str.lower().str.replace(" ", "_")
 df = replace_mistakes(df)
-df = new_columns(df)
-df = fill_errors(df, "revenue", "median")
+df = to_time_columns(df)
+df = fill_all_errors(df)
 df["revenue"] = df["revenue"].fillna(0)
-df["bought"] = df["revenue"].map(lambda x: "yes" if x != 0 else "no")
-print(df.head())
+df["payer"] = df["revenue"].map(lambda x: "yes" if x != 0 else "no")
+# print(df.head())
 
-# fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(11, 4))
-# sns.scatterplot(df[df["bought"] == "yes"].dropna(), x="region", y="sessiondurationsec", ax=ax1)
-# sns.scatterplot(fill_na(df[df["bought"] == "yes"], "region", "mode"), x="region", y="sessiondurationsec", ax=ax2)
-# sns.scatterplot(df.fillna({"region": "other"}), x="region", y="sessiondurationsec", ax=ax3)
-#
-# plt.show()
+# plot_corr_with_nans()
 
 
 # print((df.isna().sum() / len(df)).round(4) * 100)
@@ -92,4 +100,6 @@ print(df.head())
 
 # mode, because the data is categorical
 # df["region"] = fill_na(df, "region", "mode")
-sns.set()
+
+plt.show()
+# sns.set()

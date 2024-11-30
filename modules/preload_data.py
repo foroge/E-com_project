@@ -14,7 +14,7 @@ def fill_na(data: pd.DataFrame | pd.Series, column: str, method: str, group: lis
             if group:
                 data[column].fillna(data.groupby(group)[column].transform(method), inplace=True)
             else:
-                data[column].fillna(data[column].median(), inplace=True)
+                data[column] = data[column].fillna(data[column].median())
         case "mean":
             if group:
                 data[column].fillna(data.groupby(group)[column].transform(method), inplace=True)
@@ -51,13 +51,13 @@ def fill_errors(df: pd.DataFrame, columns: str | list[str], fill_with: str, err_
         err_min = df[col].quantile(0.25) - err_range * (df[col].quantile(0.75) - df[col].quantile(0.25))
         match fill_with:
             case "median":
-                med = df[col].median()
+                med = df[err_max > df[col]][df[col] > err_min][col].median()
             case "mean":
-                med = df[col].mean()
+                med = df[err_max > df[col]][df[col] > err_min][col].mean()
             case "mode":
-                med = df[col].mode()[0]
+                med = df[err_max > df[col]][df[col] > err_min][col].mode()[0]
             case "drop":
-                df[col] = df[err_max > df[col] > err_min][col]
+                df[col] = df[err_max > df[col]][df[col] > err_min][col]
                 continue
             case _:
                 raise ValueError(f"unable to fill column {col} with {fill_with}")
