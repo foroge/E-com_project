@@ -10,16 +10,38 @@ def check_normal(values: pd.Series, alp: float) -> bool:
     return shapiro(values).pvalue > alp
 
 
+def replace_mistakes(df: pd.DataFrame) -> pd.DataFrame:
+    df["region"] = df["region"].replace("Unjted States", "United States")
+    df["region"] = df["region"].replace("Frаnce", "France")  # it's NOT the same
+    df["region"] = df["region"].replace("Frаncе", "France")  # it's NOT the same
+    df["region"] = df["region"].replace("Franсe", "France")  # it's NOT the same
+
+    df["region"] = df["region"].replace("germany", "Germany")
+    df["region"] = df["region"].replace("UK", "UК")  # it's NOT the same
+
+    df["channel"] = df["channel"].replace("контексная реклама", "контекстная реклама")
+    df["device"] = df["device"].replace("Android", "android")  # idk what name we will use? but i like this
+    # maybe there are other mistakes in columns
+    # maybe we can use list with for
+    # we have 0.86271506 value in promo_code? but it needs to be 0 or 1
+
+    # print(df["promo_code"].unique())
+    return df
+
+
 df = pd.read_csv("./data/data.csv", encoding="utf-8", sep=",")
 df.columns = df.columns.str.lower().str.replace(" ", "_")
-
+df = replace_mistakes(df)
+print(df.head().T)
 # print((df.isna().sum() / len(df)).round(4) * 100)
 
 columns = df.columns[-4:]
 # print(df[columns].isna().corr())
+
 # the user did not make a purchase
-for col in columns:
-    df[col].fillna("не совершал", inplace=True)
+# for col in columns:
+#     df[col].fillna("не совершал", inplace=True)
+# BUT we shouldn't fill it with strings (it is number type)
 
 
 # сolumns = df.columns
