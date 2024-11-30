@@ -4,7 +4,7 @@ import seaborn as sns
 import numpy as np
 # import missingno as msno
 from modules.preload_data import fill_na, fill_errors
-from scipy.stats import shapiro
+from scipy.stats import shapiro, kruskal
 import matplotlib.pyplot as plt
 
 
@@ -57,13 +57,20 @@ def fill_all_errors(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def plot_corr_with_nans(df, x, y, payer="yes") -> None:
+def plot_corr_with_nans(df: pd.DataFrame, x: str, y: str, payer: str | None = "yes") -> None:
     if payer:
-        df = df[df[payer] == payer]
+        df = df[df["payer"] == payer]
     fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(14, 4))
     sns.boxplot(df.dropna(), x=x, y=y, ax=ax1)
-    sns.boxplot(fill_na(df, y, "median"), x=x, y=y, ax=ax2)
-    sns.boxplot(df.fillna({"region": "other"}), x=x, y=y, ax=ax3)
+    sns.boxplot(fill_na(df.copy(), x, "mode"), x=x, y=y, ax=ax2)
+    sns.boxplot(df.fillna({x: "other"}), x=x, y=y, ax=ax3)
+
+
+def kruskal_test(df: pd.DataFrame, x: str, y: str) -> tuple:
+    uniq = df[x].unique()
+    stat, p = kruskal(*[df[df[x] == uniq[i]][y] for i in range(len(uniq))])
+    return float(stat), float(p)
+
 
 
 df = pd.read_csv("./data/data.csv", encoding="utf-8", sep=",")
@@ -75,9 +82,6 @@ df["promo_code"] = df["promo_code"].fillna(0)
 df["revenue"] = df["revenue"].fillna(0)
 df["payer"] = df["revenue"].map(lambda x: "yes" if x != 0 else "no")
 # print(df.head())
-
-# plot_corr_with_nans()
-
 
 # print((df.isna().sum() / len(df)).round(4) * 100)
 
