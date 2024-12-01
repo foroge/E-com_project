@@ -76,11 +76,17 @@ def kruskal_test(df: pd.DataFrame, x: str, y: str) -> tuple:
     return float(stat), float(p)
 
 
+def fill_missings(rows: pd.Series, column: str) -> None:
+        df.loc[rows, column] = df.loc[rows, column].fillna(method="ffill").fillna(method="bfill")
+
+
 def fill_missing_data_inplace(df: pd.DataFrame) -> pd.DataFrame:
     user_ids = df["user_id"].unique()
     for user_id in user_ids:
         rows = df["user_id"] == user_id
-        df.loc[rows, "channel"] = df.loc[rows, "channel"].fillna(method="ffill").fillna(method="bfill")
+        fill_missings(rows, "region")
+        fill_missings(rows, "device")
+        fill_missings(rows, "channel")
     return df
 
 
