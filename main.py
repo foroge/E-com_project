@@ -6,6 +6,10 @@ import numpy as np
 from modules.preload_data import fill_na, fill_errors
 from scipy.stats import shapiro, kruskal
 import matplotlib.pyplot as plt
+import warnings
+
+
+warnings.filterwarnings('ignore')
 
 
 def check_normal(values: pd.Series, alp: float) -> bool:
@@ -72,6 +76,14 @@ def kruskal_test(df: pd.DataFrame, x: str, y: str) -> tuple:
     return float(stat), float(p)
 
 
+def fill_missing_data_inplace(df: pd.DataFrame) -> pd.DataFrame:
+    user_ids = df["user_id"].unique()
+    for user_id in user_ids:
+        rows = df["user_id"] == user_id
+        df.loc[rows, "channel"] = df.loc[rows, "channel"].fillna(method="ffill").fillna(method="bfill")
+    return df
+
+
 df = pd.read_csv("./data/data.csv", encoding="utf-8", sep=",")
 df.columns = df.columns.str.lower().str.replace(" ", "_")
 df = replace_mistakes(df)
@@ -82,6 +94,7 @@ df["revenue"] = df["revenue"].fillna(0)
 df["payer"] = df["revenue"].map(lambda x: "yes" if x != 0 else "no")
 df["sum"] = df["revenue"] * (1 - df["promo_code"] / 10)
 df = df.drop_duplicates(subset=["user_id", "session_start", "session_end"])
+df = fill_missing_data_inplace(df)
 # print(df.head(30))
 # sns.histplot(df["sessiondurationsec"])
 # df = df[df.duplicated() is True]
