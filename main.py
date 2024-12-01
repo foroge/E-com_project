@@ -76,17 +76,20 @@ def kruskal_test(df: pd.DataFrame, x: str, y: str) -> tuple:
     return float(stat), float(p)
 
 
-def fill_missings(rows: pd.Series, column: str) -> None:
+def fill_missing_with_dup(df: pd.DataFrame, rows: pd.Series, column: str) -> pd.DataFrame:
         df.loc[rows, column] = df.loc[rows, column].fillna(method="ffill").fillna(method="bfill")
+        return df
 
 
-def fill_missing_data_inplace(df: pd.DataFrame) -> pd.DataFrame:
+def fill_missing_data_categorical(df: pd.DataFrame) -> pd.DataFrame:
     user_ids = df["user_id"].unique()
     for user_id in user_ids:
-        rows = df["user_id"] == user_id
-        fill_missings(rows, "region")
-        fill_missings(rows, "device")
-        fill_missings(rows, "channel")
+        rows = df["user_id"].map(lambda x: x == user_id)
+        if len(df[df["user_id"] == user_id]) == 1:
+            continue
+        df = fill_missing_with_dup(df, rows, "region")
+        df = fill_missing_with_dup(df, rows, "device")
+        df = fill_missing_with_dup(df, rows, "channel")
     return df
 
 
@@ -100,7 +103,11 @@ df["revenue"] = df["revenue"].fillna(0)
 df["payer"] = df["revenue"].map(lambda x: "yes" if x != 0 else "no")
 df["sum"] = df["revenue"] * (1 - df["promo_code"] / 10)
 df = df.drop_duplicates(subset=["user_id", "session_start", "session_end"])
-df = fill_missing_data_inplace(df)
+df = fill_missing_data_categorical(df)
+
+new_df_dub = df[df["user_id"].isin(df["user_id"][df["user_id"].duplicated()])].sort_values("user_id")
+print(new_df_dub)  # [["user_id", "session_date", "revenue"]])
+
 # print(df.head(30))
 # sns.histplot(df["sessiondurationsec"])
 # df = df[df.duplicated() is True]
