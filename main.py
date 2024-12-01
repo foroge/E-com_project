@@ -72,7 +72,6 @@ def kruskal_test(df: pd.DataFrame, x: str, y: str) -> tuple:
     return float(stat), float(p)
 
 
-
 df = pd.read_csv("./data/data.csv", encoding="utf-8", sep=",")
 df.columns = df.columns.str.lower().str.replace(" ", "_")
 df = replace_mistakes(df)
@@ -81,8 +80,11 @@ df = fill_all_errors(df)
 df["promo_code"] = df["promo_code"].fillna(0)
 df["revenue"] = df["revenue"].fillna(0)
 df["payer"] = df["revenue"].map(lambda x: "yes" if x != 0 else "no")
-# print(df.head())
-
+df["sum"] = df["revenue"] * (1 - df["promo_code"] / 10)
+df = df.drop_duplicates(subset=["user_id", "session_start", "session_end"])
+# print(df.head(30))
+# sns.histplot(df["sessiondurationsec"])
+# df = df[df.duplicated() is True]
 # print((df.isna().sum() / len(df)).round(4) * 100)
 
 # columns = df.columns[-4:]
