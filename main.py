@@ -84,9 +84,9 @@ def fill_missing_with_dup(df: pd.DataFrame, rows: pd.Series, column: str) -> pd.
 def fill_missing_data_categorical(df: pd.DataFrame) -> pd.DataFrame:
     user_ids = df["user_id"].unique()
     for user_id in user_ids:
-        rows = df["user_id"].map(lambda x: x == user_id)
         if len(df[df["user_id"] == user_id]) == 1:
             continue
+        rows = df["user_id"].map(lambda x: x == user_id)
         df = fill_missing_with_dup(df, rows, "region")
         df = fill_missing_with_dup(df, rows, "device")
         df = fill_missing_with_dup(df, rows, "channel")
