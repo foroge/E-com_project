@@ -77,8 +77,8 @@ def kruskal_test(df: pd.DataFrame, x: str, y: str) -> tuple:
 
 
 def fill_missing_with_dup(df: pd.DataFrame, rows: pd.Series, column: str) -> pd.DataFrame:
-        df.loc[rows, column] = df.loc[rows, column].fillna(method="ffill").fillna(method="bfill")
-        return df
+    df.loc[rows, column] = df.loc[rows, column].fillna(method="ffill").fillna(method="bfill")
+    return df
 
 
 def fill_missing_data_categorical(df: pd.DataFrame) -> pd.DataFrame:
@@ -104,9 +104,14 @@ df["payer"] = df["revenue"].map(lambda x: "yes" if x != 0 else "no")
 df["sum"] = df["revenue"] * (1 - df["promo_code"] / 10)
 df = df.drop_duplicates(subset=["user_id", "session_start", "session_end"])
 df = fill_missing_data_categorical(df)
-
 new_df_dub = df[df["user_id"].isin(df["user_id"][df["user_id"].duplicated()])].sort_values("user_id")
-print(new_df_dub)  # [["user_id", "session_date", "revenue"]])
+# print(new_df_dub)  # [["user_id", "session_date", "revenue"]])
+columns_to_fill = ['region', 'device', 'channel']
+for col in columns_to_fill:
+    df = fill_na(df, column=col, method='mode')
+# print(df.isna().sum())
+# for column in list(df):
+#     print(df[column].value_counts())
 
 # print(df.head(30))
 # sns.histplot(df["sessiondurationsec"])
