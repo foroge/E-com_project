@@ -106,9 +106,9 @@ df = df.drop_duplicates(subset=["user_id", "session_start", "session_end"])
 df = fill_missing_data_categorical(df)
 new_df_dub = df[df["user_id"].isin(df["user_id"][df["user_id"].duplicated()])].sort_values("user_id")
 # print(new_df_dub)  # [["user_id", "session_date", "revenue"]])
-columns_fill_moda = ['region', 'device', 'channel']
-for col in columns_fill_moda:
+for col in ['region', 'device', 'channel']:
     df = fill_na(df, column=col, method='mode')
+# print(df[df["region"].isnull()])
 # print(df.isna().sum())
 # for column in list(df):
 #     print(df[column].value_counts())
