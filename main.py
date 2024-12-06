@@ -136,7 +136,8 @@ def calculations(data: pd.DataFrame) -> None:
     print("Продолжительность сессии по рекламному каналу\n")
     for channel in channels:
         print(f"Рекламной канал: {channel}\n"
-              f"Длительность сессии:\n {calculate_normal_time(round(data["sessiondurationsec"][data["channel"] == channel].agg("mean")))}")
+              f"Длительность сессии:\n"
+              f" {calculate_normal_time(round(data["sessiondurationsec"][data["channel"] == channel].agg("mean")))}")
         print('\u2500' * 10)
 
     print('\u2501' * 50)
@@ -144,7 +145,8 @@ def calculations(data: pd.DataFrame) -> None:
     print("Продолжительность сессии по девайсу\n")
     for device in devices:
         print(f"Девайс: {device}\n"
-              f"Длительность сессии:\n {calculate_normal_time(round(data["sessiondurationsec"][data["device"] == device].agg("mean")))}")
+              f"Длительность сессии:\n"
+              f" {calculate_normal_time(round(data["sessiondurationsec"][data["device"] == device].agg("mean")))}")
         print('\u2500' * 10)
 
     print('\u2501' * 50)
@@ -186,6 +188,33 @@ def calculations(data: pd.DataFrame) -> None:
         print(f"Регион: {mean_region[0]}\nсумма чека: {mean_region[1]}")
         print('\u2500' * 10)
 
+    print('\u2501' * 50)
+
+    # не доделал
+    print("Топ 3 месяца по регионам")
+    months_payer = []
+    months_all = []
+    for month in df["month"].unique():
+        mean_payer = df["sum"][(df["payer"] == "yes") | (df["month"] == month)].agg("mean")
+        months_payer.append((month, mean_payer))
+
+        mean_all = df["sum"][df["month"] == month].agg("mean")
+        months_all.append((month, mean_all))
+    months_payer = sorted(months_payer, key=lambda x: x[1])[:3]
+    months_all = sorted(months_all, key=lambda x: x[1])[:3]
+    for month in months_all:
+        new_df = df[(df["payer"] == "yes") | (df["month"] == month)]
+        mean_check_payer_region, mean_check_all_region = top_3_mean(new_df, "region")
+        print(f"Топ 3 средний чек с учетом неплатящих по региону в месяце {month}\n")
+        for mean_region in mean_check_all_region:
+            print(f"Регион: {mean_region[0]}\nсумма чека: {mean_region[1]}")
+            print('\u2500' * 10)
+
+        print(f"Топ 3 средний чек с учетом платящих по региону в месяце {month}\n")
+        for mean_region in mean_check_payer_region:
+            print(f"Регион: {mean_region[0]}\nсумма чека: {mean_region[1]}")
+            print('\u2500' * 10)
+        # print(f"Топ 3 региона в месяце {top_3_mean(new_df, "region")}")
 
 
 df = pd.read_csv("./data/data.csv", encoding="utf-8", sep=",")
