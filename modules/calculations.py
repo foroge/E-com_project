@@ -155,7 +155,6 @@ class Calculator:
                     print(to_string_month(key), round(top_as_dict[key], 2))
                 print('\u2500' * 10)
 
-        # Я хз, как считать топ-3 и что за него брать
         if print_line:
             print('\u2501' * 50, "\n")
 
