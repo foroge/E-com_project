@@ -2,8 +2,11 @@ import pandas as pd
 from scipy.stats import kruskal, mannwhitneyu
 
 
-def device_purchases_by_region(data: pd.DataFrame) -> None:
-    grouped_data = data.groupby(["region", "device", "session_date"]).agg(
+def kruskal_test_region(data: pd.DataFrame, column: str) -> None:
+    print(f"Оценка влияния {column} на количесво покупок в день")
+    influence = 0
+    ansver = [['region', 'column', 'значение корреляции', 'р-уровень', 'метод корреляции']]
+    grouped_data = data.groupby(["region", column, "session_date"]).agg(
         purchases=("revenue", lambda x: (x > 0).sum())
     ).reset_index()
 
@@ -11,12 +14,20 @@ def device_purchases_by_region(data: pd.DataFrame) -> None:
         region_data = grouped_data[grouped_data["region"] == region]
         print(f"Регион: {region}")
 
-        stat, p_value = kruskal_test(region_data, x="device", y="purchases")
+        stat, p_value = kruskal_test(region_data, x=column, y="purchases")
         print(f"Тест Краскела-Уоллиса: H-статистика = {stat}, p-value = {p_value}")
+        ansver.append(["region", column, float(stat), float(p_value), 'Тест Краскела-Уоллиса'])
         if p_value < 0.05:
-            print("Результат: Тип устройства влияет на количество покупок в день.")
+            influence += 1
         else:
-            print("Результат: Нет доказательств, что тип устройства влияет на количество покупок в день.")
+            influence -= 1
+    if influence > 0:
+        print("Есть влияние")
+    elif influence < 0:
+        print("Нет влияния")
+    else:
+        print("50 на 50 смотреть и думать надо")
+    print()
 
 
 def kruskal_test(data: pd.DataFrame, x: str, y: str) -> tuple:

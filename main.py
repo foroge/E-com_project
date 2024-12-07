@@ -6,7 +6,7 @@ import numpy as np
 from modules.preload_data import fill_na, fill_errors
 from modules.calculations import calculate_normal_time, Calculator
 from modules.diagrams import DiagramCreator
-from modules.hypotheses import device_purchases_by_region
+from modules.hypotheses import kruskal_test_region
 from scipy.stats import shapiro, kruskal
 import matplotlib.pyplot as plt
 import warnings
@@ -104,7 +104,10 @@ new_df_dub = df[df["user_id"].isin(df["user_id"][df["user_id"].duplicated()])].s
 # print(new_df_dub)  # [["user_id", "session_date", "revenue"]])
 for col in ['region', 'device', 'channel']:
     df = fill_na(df, column=col, method='mode')
-device_purchases_by_region(df)
+
+kruskal_test_region(df, 'device')
+kruskal_test_region(df, 'channel')
+
 # print(df[df["region"].isnull()])
 # print(df.isna().sum())
 # for column in list(df):
