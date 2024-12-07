@@ -17,11 +17,11 @@ class Calculator:
         if df is None:
             df = self.df
         if column and value:
-            payer_mean = round(df["sum"][(df["payer"] == "yes") | (df[column] == value)].agg("mean"), 2)
-            all_mean = round(df["sum"][df[column] == value].agg("mean"), 2)
+            payer_mean = df["sum"][(df["payer"] == "yes") | (df[column] == value)].mean()
+            all_mean = df["sum"][df[column] == value].mean()
         else:
-            payer_mean = round(df["sum"].agg("mean"), 2)
-            all_mean = round(df["sum"][df["payer"] == "yes"].agg("mean"), 2)
+            payer_mean = df["sum"].mean()
+            all_mean = df["sum"][df["payer"] == "yes"].mean()
         return round(payer_mean, 2), round(all_mean, 2)
 
     def top_3_mean(self, df: pd.DataFrame | None = None, column: str = "") -> (list, list):
@@ -114,11 +114,11 @@ class Calculator:
 
     def calculate_mean_sum(dfr: pd.DataFrame, column: str = "", value: str = ""):
         if column and value:
-            payer_mean = round(dfr["sum"][(dfr["payer"] == "yes") | (dfr[column] == value)].agg("mean"), 2)
-            all_mean = round(dfr["sum"][dfr[column] == value].agg("mean"), 2)
+            payer_mean = round(dfr["sum"][(dfr["payer"] == "yes") | (dfr[column] == value)].mean(), 2)
+            all_mean = round(dfr["sum"][dfr[column] == value].mean(), 2)
         else:
-            payer_mean = round(dfr["sum"].agg("mean"), 2)
-            all_mean = round(dfr["sum"][dfr["payer"] == "yes"].agg("mean"), 2)
+            payer_mean = round(dfr["sum"].mean(), 2)
+            all_mean = round(dfr["sum"][dfr["payer"] == "yes"].mean(), 2)
         return round(payer_mean, 2), round(all_mean, 2)
 
     def top_3_mean(dfr: pd.DataFrame, column: str) -> (list, list):
@@ -201,10 +201,10 @@ class Calculator:
     months_payer = []
     months_all = []
     for month in data["month"].unique():
-        mean_payer = data["sum"][(data["payer"] == "yes") | (data["month"] == month)].agg("mean")
+        mean_payer = data["sum"][(data["payer"] == "yes") | (data["month"] == month)].mean()
         months_payer.append((month, mean_payer))
 
-        mean_all = data["sum"][data["month"] == month].agg("mean")
+        mean_all = data["sum"][data["month"] == month].mean()
         months_all.append((month, mean_all))
     months_payer = sorted(months_payer, key=lambda x: x[1])[:3]
     months_all = sorted(months_all, key=lambda x: x[1])[:3]
