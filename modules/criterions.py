@@ -53,6 +53,13 @@ def count_pearson_p(br: pd.DataFrame, gd: pd.DataFrame, rnd: int = -1) -> float:
     return float(pearsonr(br, gd).pvalue)
 
 
+def count_spearman(br: pd.Series, gd: pd.Series, rnd: int = -1) -> float:
+    spear = spearmanr(br, gd)
+    if rnd >= 0:
+        return f"statistics: {float(round(spear.statistic, rnd))}\npvalue: {float(round(spear.pvalue, rnd))}"
+    return f"statistics: {float(spear.statistic)}\npvalue: {float(spear.pvalue)}"
+
+
 def all_var(df: pd.DataFrame, group: str, value: str):
     mean = df[value].mean()
     mean_group = df.groupby(group)[value].mean()

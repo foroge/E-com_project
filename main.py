@@ -6,6 +6,7 @@ import numpy as np
 from modules.preload_data import fill_na, fill_errors
 from modules.calculations import calculate_normal_time, Calculator
 from modules.diagrams import DiagramCreator
+from modules.criterions import check_normal, count_spearman
 from scipy.stats import shapiro, kruskal
 import matplotlib.pyplot as plt
 import warnings
@@ -136,7 +137,7 @@ for col in ['region', 'device', 'channel']:
 
 
 # Расчеты
-calculator = Calculator(df)
+# calculator = Calculator(df)
 # calculator.print_mean_sum_with_and_without_payers()
 # calculator.print_session_duration_by_column(column="channel", russian_name="Рекламный канал")
 # calculator.print_session_duration_by_column(column="device", russian_name="Девайс")
@@ -149,10 +150,20 @@ calculator = Calculator(df)
 # calculator.print_summary_table()
 
 # Графики
-diagrams = DiagramCreator(df)
-diagrams.pie_of_payers_by_column(column="region")
-diagrams.pie_of_payers_by_column(column="channel")
-diagrams.pie_of_payers_by_column(column="device")
+# diagrams = DiagramCreator(df)
+# diagrams.pie_of_payers_by_column(column="region")
+# diagrams.pie_of_payers_by_column(column="channel")
+# diagrams.pie_of_payers_by_column(column="device")
+#
+#
+# plt.show()
 
 
-plt.show()
+# Н0: Между продолжительностью сессии и суммой покупок нет связи
+# Н1: Между продолжительностью сессии и суммой покупок есть связь
+# print(check_normal(df["sessiondurationsec"], 0.05) and check_normal(df["sum"], 0.05))
+# False - распределение не нормальное. Продолжительность сессии - количественная шкала, сумма покупок - тоже
+# Значит используем корреляцию Спирмена
+# print(count_spearman(df["sessiondurationsec"], df["sum"], 4))
+# statistics: 0.0246 коэффициент корреляции ниже 0.3, так что по шкале Чеддока можно сказать, что корреляция отсутствует
+# pvalue: 0.4342 т.к. критерий больше 0.05, альтернативную гипотезу принимать нельзя
