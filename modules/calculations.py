@@ -158,6 +158,27 @@ class Calculator:
         if print_line:
             print('\u2501' * 50, "\n")
 
+    def print_summary_table(self, df: pd.DataFrame | None = None, print_line: bool = True) -> None:
+        if df is None:
+            df = self.df
+        summary_table = df.groupby("channel").agg(
+            total_users=("user_id", "count"),
+            unique_users=("user_id", "nunique"),
+            paying_users=("payer", lambda x: (x == "yes").sum()),
+            total_revenue=("revenue", "sum")
+        ).reset_index()
+
+        print(summary_table)
+        print('\u2500' * 10)
+        max_payer_user = summary_table.loc[summary_table['total_users'].idxmax(), "channel"]
+        max_sum_sale = summary_table.loc[summary_table['total_users'].idxmax(), "channel"]
+
+        print(f"Источник который “принес” больше всего платящих пользователей: {max_payer_user}")
+        print(f"Ссточник который “принес” больше большую сумму продаж: {max_sum_sale}")
+
+        if print_line:
+            print('\u2501' * 50, "\n")
+
 
 """def calculations(data: pd.DataFrame) -> None:
     devices = data["device"].unique()
