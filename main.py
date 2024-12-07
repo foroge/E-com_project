@@ -109,6 +109,21 @@ new_df_dub = df[df["user_id"].isin(df["user_id"][df["user_id"].duplicated()])].s
 for col in ['region', 'device', 'channel']:
     df = fill_na(df, column=col, method='mode')
 
+summary_table = df.groupby("channel").agg(
+    total_users=("user_id", "count"),
+    unique_users=("user_id", "nunique"),
+    paying_users=("payer", lambda x: (x == "yes").sum()),
+    total_revenue=("revenue", "sum")
+).reset_index()
+
+print(summary_table)
+
+max_payer_user = summary_table.loc[summary_table['total_users'].idxmax(), "channel"]
+max_sum_sale = summary_table.loc[summary_table['total_users'].idxmax(), "channel"]
+
+print(f"Источник который “принес” больше всего платящих пользователей: {max_payer_user}")
+print(f"Ссточник который “принес” больше большую сумму продаж: {max_sum_sale}")
+
 # print(df[df["region"].isnull()])
 # print(df.isna().sum())
 # for column in list(df):
