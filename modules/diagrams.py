@@ -17,3 +17,14 @@ class DiagramCreator:
             axs[i].pie(val.value_counts(), labels=val.unique(), autopct='%1.0f%%')
             axs[i].set_title(groups[i])
         plt.show()
+
+    def hist_of_payers_by_column(self, df: pd.DataFrame | None = None, column: str = "") -> None:
+        if df is None:
+            df = self.df
+        sea = sns.FacetGrid(df, col="payer", height=4, aspect=1.5)
+        sea.map(sns.histplot, column)
+        sea.set_xticklabels(rotation=-15)
+        axes = sea.axes.flatten()
+        axes[0].set_title("Платящие")
+        axes[1].set_title("Неплатящие")
+        plt.show()

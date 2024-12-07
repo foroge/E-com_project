@@ -150,9 +150,11 @@ calculator = Calculator(df)
 
 # Графики
 diagrams = DiagramCreator(df)
-diagrams.pie_of_payers_by_column(column="region")
-diagrams.pie_of_payers_by_column(column="channel")
-diagrams.pie_of_payers_by_column(column="device")
+# diagrams.pie_of_payers_by_column(column="region")
+# diagrams.pie_of_payers_by_column(column="channel")
+# diagrams.pie_of_payers_by_column(column="device")
+# diagrams.hist_of_payers_by_column(column="region")
+# diagrams.hist_of_payers_by_column(column="channel")
+# diagrams.hist_of_payers_by_column(column="device")
 
-
-plt.show()
+# plt.show()
