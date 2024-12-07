@@ -18,7 +18,7 @@ class DiagramCreator:
             axs[i].set_title(groups[i])
         plt.show()
 
-    def hist_of_payers_by_column(self, df: pd.DataFrame | None = None, column: str = "") -> None:
+    def hist_of_column_by_payer(self, df: pd.DataFrame | None = None, column: str = "") -> None:
         if df is None:
             df = self.df
         sea = sns.FacetGrid(df, col="payer", height=4, aspect=1.5)
@@ -27,4 +27,11 @@ class DiagramCreator:
         axes = sea.axes.flatten()
         axes[0].set_title("Платящие")
         axes[1].set_title("Неплатящие")
+        plt.show()
+
+    def hist_of_payers_count_by_column(self, df: pd.DataFrame | None = None, column: str = "") -> None:
+        if df is None:
+            df = self.df
+        sns.histplot(df[df["payer"] == "yes"], x=column)
+        plt.xticks(rotation=15)
         plt.show()
