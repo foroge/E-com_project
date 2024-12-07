@@ -5,6 +5,7 @@ import numpy as np
 # import missingno as msno
 from modules.preload_data import fill_na, fill_errors
 from modules.calculations import calculate_normal_time, Calculator
+from modules.diagrams import DiagramCreator
 from scipy.stats import shapiro, kruskal
 import matplotlib.pyplot as plt
 import warnings
@@ -131,7 +132,6 @@ for col in ['region', 'device', 'channel']:
 # mode, because the data is categorical
 # df["region"] = fill_na(df, "region", "mode")
 
-plt.show()
 # sns.set()
 
 
@@ -146,4 +146,13 @@ calculator = Calculator(df)
 # calculator.print_mean_purchase_count_by_1_customer()
 # calculator.print_top3_months_mean_sum_by_column(column="region", russian_name="регионам")
 # calculator.print_top3_mau_column(column="channel", russian_name="рекламным каналам")
-calculator.print_summary_table()
+# calculator.print_summary_table()
+
+# Графики
+diagrams = DiagramCreator(df)
+diagrams.pie_of_payers_by_column(column="region")
+diagrams.pie_of_payers_by_column(column="channel")
+diagrams.pie_of_payers_by_column(column="device")
+
+
+plt.show()
