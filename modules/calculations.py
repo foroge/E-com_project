@@ -38,6 +38,13 @@ class Calculator:
         mean_check_payer_column = sorted(mean_check_payer_column, key=lambda x: x[1], reverse=True)[:3]
         return mean_check_payer_column, mean_check_all_column
 
+    def calculate_mau_by_column(self, df: pd.DataFrame | None = None, column: str | None = None) -> pd.Series:
+        if df is None:
+            df = self.df
+        if column is None:
+            return df.groupby(df["session_date"].dt.month)["user_id"].nunique()
+        return df.groupby([df["session_date"].dt.month, column])["user_id"].nunique()
+
     def print_mean_sum_with_and_without_payers(self, df: pd.DataFrame | None = None, print_line: bool = True) -> None:
         if df is None:
             payer_check_mean, all_check_mean = self.calculate_mean_sum()
@@ -85,6 +92,20 @@ class Calculator:
                 print('\u2500' * 10)
         if print_line:
             print('\u2501' * 50, "\n")
+
+    def print_mean_purchase_count_by_1_customer(self, df: pd.DataFrame | None = None, print_line: bool = True) -> None:
+        if df is None:
+            df = self.df
+        payers = df[df["payer"] == "yes"]["user_id"].value_counts()
+        print(f"Пользователь в среднем совершает {payers.mean()} покупок с учетом только платящих пользователей")
+        print(f"Пользователь в среднем совершает {payers.sum() / len(df["user_id"].unique())} "
+              f"покупок с учетом всех пользователей")
+        if print_line:
+            print('\u2501' * 50, "\n")
+
+    def print_top3_mau_column(self, df: pd.DataFrame | None = None, column: str | None = None) -> None:
+        print(self.calculate_mau_by_column(df=df, column=column))
+        # Я хз, как считать топ-3 и что за него брать
 
 
 """def calculations(data: pd.DataFrame) -> None:

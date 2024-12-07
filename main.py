@@ -108,6 +108,7 @@ new_df_dub = df[df["user_id"].isin(df["user_id"][df["user_id"].duplicated()])].s
 # print(new_df_dub)  # [["user_id", "session_date", "revenue"]])
 for col in ['region', 'device', 'channel']:
     df = fill_na(df, column=col, method='mode')
+
 # print(df[df["region"].isnull()])
 # print(df.isna().sum())
 # for column in list(df):
@@ -136,9 +137,11 @@ plt.show()
 
 # Рассчеты
 calculator = Calculator(df)
-calculator.print_mean_sum_with_and_without_payers(print_line=True)
-calculator.print_session_duration_by_column(column="channel", russian_name="Рекламный канал", print_line=True)
-calculator.print_session_duration_by_column(column="device", russian_name="Девайс", print_line=True)
-calculator.print_top3_sum_by_column(column="device", russian_name="Девайс", print_line=True)
-calculator.print_top3_sum_by_column(column="channel", russian_name="Рекламный канал", print_line=True)
-calculator.print_top3_sum_by_column(column="region", russian_name="Регион", print_line=True)
+# calculator.print_mean_sum_with_and_without_payers()
+# calculator.print_session_duration_by_column(column="channel", russian_name="Рекламный канал")
+# calculator.print_session_duration_by_column(column="device", russian_name="Девайс")
+# calculator.print_top3_sum_by_column(column="device", russian_name="Девайс")
+# calculator.print_top3_sum_by_column(column="channel", russian_name="Рекламный канал")
+# calculator.print_top3_sum_by_column(column="region", russian_name="Регион")
+# calculator.print_mean_purchase_count_by_1_customer()
+calculator.print_top3_mau_column(column="channel")
