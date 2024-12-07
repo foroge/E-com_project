@@ -70,7 +70,7 @@ class Calculator:
         for channel in uniq:
             print(f"{russian_name}: {channel}\n"
                   f"Длительность сессии:\n"
-                  f" {calculate_normal_time(round(df["sessiondurationsec"][df[column] == channel].agg("mean")))}")
+                  f"{calculate_normal_time(round(df["sessiondurationsec"][df[column] == channel].agg("mean")))}")
             print('\u2500' * 10)
         if print_line:
             print('\u2501' * 50, "\n")
@@ -89,12 +89,12 @@ class Calculator:
         if payer is None or payer is False:
             print(f"Топ 3 средний чек с учетом неплатящих по {russian_name}\n")
             for mean in mean_check_all:
-                print(f"{russian_name}: {mean[0]}\nсумма чека: {mean[1]}")
+                print(f"{russian_name}: {mean[0]}\nСумма чека: {mean[1]}")
                 print('\u2500' * 10)
         if payer is None or payer is True:
             print(f"Топ 3 средний чек с учетом платящих по {russian_name}\n")
             for mean in mean_check_payer:
-                print(f"{russian_name}: {mean[0]}\nсумма чека: {mean[1]}")
+                print(f"{russian_name}: {mean[0]}\nСумма чека: {mean[1]}")
                 print('\u2500' * 10)
         if print_line:
             print('\u2501' * 50, "\n")
