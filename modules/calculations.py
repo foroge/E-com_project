@@ -9,6 +9,12 @@ def calculate_normal_time(sec: int) -> str:
     return f"Минут: {m}\nСекунд: {s}"
 
 
+def to_string_month(month: int) -> str:
+    months = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь",
+              "Ноябрь", "Декабрь"]
+    return months[month]
+
+
 class Calculator:
     def __init__(self, data: pd.DataFrame):
         self.df = data
@@ -100,6 +106,31 @@ class Calculator:
         print(f"Пользователь в среднем совершает {payers.mean()} покупок с учетом только платящих пользователей")
         print(f"Пользователь в среднем совершает {payers.sum() / len(df["user_id"].unique())} "
               f"покупок с учетом всех пользователей")
+        if print_line:
+            print('\u2501' * 50, "\n")
+
+    def print_top3_months_mean_sum_by_column(self, df: pd.DataFrame | None = None, column: str | None = None,
+                                             print_line: bool = True) -> None:
+        if df is None:
+            df = self.df
+        if column is None:
+            print(f"Топ-3 месяцев по среднему чеку")
+            all_mean = df.groupby(df["session_date"].dt.month)["sum"].agg("mean").to_frame().reset_index()
+            top_as_dict = all_mean.nlargest(3, "sum").set_index("session_date").to_dict()["sum"]
+            for key in top_as_dict:
+                print(to_string_month(key), round(top_as_dict[key], 2))
+        else:
+            print(f"Топ-3 месяцев по среднему чеку по {column}")
+            all_mean = df.groupby([column, df["session_date"].dt.month])["sum"].agg("mean").to_frame().reset_index()
+            groups = all_mean[column].unique()
+            print('\u2500' * 10)
+            for group in groups:
+                print(f"Топ-3 месяцев по среднему чеку в {group}")
+                top_as_dict = all_mean[all_mean[column] == group].nlargest(3, "sum").drop(column, axis=1)
+                top_as_dict = top_as_dict.set_index("session_date").to_dict()["sum"]
+                for key in top_as_dict:
+                    print(to_string_month(key), round(top_as_dict[key], 2))
+                print('\u2500' * 10)
         if print_line:
             print('\u2501' * 50, "\n")
 
