@@ -6,6 +6,7 @@ import numpy as np
 from modules.preload_data import fill_na, fill_errors
 from modules.calculations import calculate_normal_time, Calculator
 from modules.diagrams import DiagramCreator
+from modules.hypotheses import device_purchases_by_region
 from scipy.stats import shapiro, kruskal
 import matplotlib.pyplot as plt
 import warnings
@@ -71,12 +72,6 @@ def plot_corr_with_nans(data: pd.DataFrame, x: str, y: str, payer: str | None = 
     sns.boxplot(data.fillna({x: "other"}), x=x, y=y, ax=ax3)
 
 
-def kruskal_test(data: pd.DataFrame, x: str, y: str) -> tuple:
-    uniq = data[x].unique()
-    stat, p = kruskal(*[data[data[x] == uniq[i]][y] for i in range(len(uniq))])
-    return float(stat), float(p)
-
-
 def fill_missing_with_dup(data: pd.DataFrame, rows: pd.Series, column: str) -> pd.DataFrame:
     data.loc[rows, column] = data.loc[rows, column].fillna(method="ffill").fillna(method="bfill")
     return data
@@ -109,7 +104,7 @@ new_df_dub = df[df["user_id"].isin(df["user_id"][df["user_id"].duplicated()])].s
 # print(new_df_dub)  # [["user_id", "session_date", "revenue"]])
 for col in ['region', 'device', 'channel']:
     df = fill_na(df, column=col, method='mode')
-
+device_purchases_by_region(df)
 # print(df[df["region"].isnull()])
 # print(df.isna().sum())
 # for column in list(df):
@@ -149,10 +144,10 @@ calculator = Calculator(df)
 # calculator.print_summary_table()
 
 # Графики
-diagrams = DiagramCreator(df)
-diagrams.pie_of_payers_by_column(column="region")
-diagrams.pie_of_payers_by_column(column="channel")
-diagrams.pie_of_payers_by_column(column="device")
-
-
-plt.show()
+# diagrams = DiagramCreator(df)
+# diagrams.pie_of_payers_by_column(column="region")
+# diagrams.pie_of_payers_by_column(column="channel")
+# diagrams.pie_of_payers_by_column(column="device")
+#
+#
+# plt.show()
