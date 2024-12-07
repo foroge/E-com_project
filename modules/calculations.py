@@ -103,14 +103,15 @@ class Calculator:
         if df is None:
             df = self.df
         payers = df[df["payer"] == "yes"]["user_id"].value_counts()
-        print(f"Пользователь в среднем совершает {payers.mean()} покупок с учетом только платящих пользователей")
-        print(f"Пользователь в среднем совершает {payers.sum() / len(df["user_id"].unique())} "
+        print(f"Пользователь в среднем совершает {round(payers.mean(), 2)} покупок с учетом только платящих "
+              f"пользователей")
+        print(f"Пользователь в среднем совершает {round(payers.sum() / len(df["user_id"].unique()), 2)} "
               f"покупок с учетом всех пользователей")
         if print_line:
             print('\u2501' * 50, "\n")
 
     def print_top3_months_mean_sum_by_column(self, df: pd.DataFrame | None = None, column: str | None = None,
-                                             print_line: bool = True) -> None:
+                                             print_line: bool = True, russian_name: str | None = None) -> None:
         if df is None:
             df = self.df
         if column is None:
@@ -120,7 +121,7 @@ class Calculator:
             for key in top_as_dict:
                 print(to_string_month(key), round(top_as_dict[key], 2))
         else:
-            print(f"Топ-3 месяцев по среднему чеку по {column}")
+            print(f"Топ-3 месяцев по среднему чеку по {russian_name if russian_name else (column if column else "")}")
             all_mean = df.groupby([column, df["session_date"].dt.month])["sum"].agg("mean").to_frame().reset_index()
             groups = all_mean[column].unique()
             print('\u2500' * 10)
@@ -134,9 +135,29 @@ class Calculator:
         if print_line:
             print('\u2501' * 50, "\n")
 
-    def print_top3_mau_column(self, df: pd.DataFrame | None = None, column: str | None = None) -> None:
-        print(self.calculate_mau_by_column(df=df, column=column))
+    def print_top3_mau_column(self, df: pd.DataFrame | None = None, column: str | None = None,
+                              russian_name: str | None = None, print_line: bool = True) -> None:
+        all_mau = self.calculate_mau_by_column(df=df, column=column).to_frame().reset_index().set_index("session_date")
+        if column is None:
+            print(f"Топ-3 месяцев по MAU")
+            top_as_dict = all_mau.nlargest(3, "user_id").to_dict()["user_id"]
+            for key in top_as_dict:
+                print(to_string_month(key), top_as_dict[key])
+        else:
+            print(f"Топ-3 месяцев по MAU по {russian_name if russian_name else column}")
+            groups = all_mau[column].unique()
+            print('\u2500' * 10)
+            for group in groups:
+                print(f"Топ-3 месяцев по MAU в {group}")
+                top_as_dict = all_mau[all_mau[column] == group].nlargest(3, "user_id").drop(column, axis=1)
+                top_as_dict = top_as_dict.to_dict()["user_id"]
+                for key in top_as_dict:
+                    print(to_string_month(key), round(top_as_dict[key], 2))
+                print('\u2500' * 10)
+
         # Я хз, как считать топ-3 и что за него брать
+        if print_line:
+            print('\u2501' * 50, "\n")
 
 
 """def calculations(data: pd.DataFrame) -> None:
