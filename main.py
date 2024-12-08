@@ -6,6 +6,8 @@ import numpy as np
 from modules.preload_data import fill_na, fill_errors
 from modules.calculations import calculate_normal_time, Calculator
 from modules.diagrams import DiagramCreator
+from modules.hypotheses import kruskal_test_region, check_avg_revenue_hypotheses
+from scipy.stats import shapiro, kruskal
 from modules.hypotheses import kruskal_test_region, numeric_and_numeric_hypo
 from scipy.stats import shapiro
 import matplotlib.pyplot as plt
@@ -112,6 +114,16 @@ for col in ['region', 'device', 'channel']:
 # kruskal_test_region(df, "Среднее количество покупок в день одинаково в зависимости от типа рекламного канала",
 #                     "Среднее количество покупок в день различается в зависимости от типа рекламного канала",
 #                     'channel')
+
+check_avg_revenue_hypotheses(df, "Cредний чек одинаков в зависимости от региона",
+                    "Cредний чек отличается в зависимости от региона",
+                    'region')
+check_avg_revenue_hypotheses(df, "Cредний чек одинаков в зависимости от рекламного канала",
+                    "Cредний чек отличается в зависимости от рекламного канала",
+                    'channel')
+check_avg_revenue_hypotheses(df, "Cредний чек одинаков в зависимости от времени суток",
+                    "Cредний чек отличается в зависимости от времени суток",
+                    'time_of_day')
 # Между средним количеством покупок в регионе United States есть различия, в зависимости от типа рекламного канала
 # После проведения попарных сравнений можно заметить, что среднее количество покупок в день у пользователей, пришедших
 # из социальных сете будет выше, чем у пользователей, пришедших от рекламы блогеров
