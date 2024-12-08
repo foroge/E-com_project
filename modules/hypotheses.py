@@ -52,6 +52,20 @@ def kruskal_test_region(data: pd.DataFrame, h0: str, h1: str, column: str) -> No
     print()
 
 
+def check_avg_revenue_hypotheses(data: pd.DataFrame, h0: str, h1: str, column: str) -> None:
+    print(f"Проверка гипотезы: '{h0}'\nс альтернативной гипозетой: '{h1}'")
+    print('\u2500' * 10)
+
+    p_value = quantitative_and_categorical(data, column, "revenue")
+    print(f"Тест Краскела-Уоллиса: p-value = {p_value}")
+    if p_value < 0.05:
+        print(f"Принимаем альтернативную гипотезу: {h1}")
+    else:
+        print(f"Нельзя отвергнуть нулевую гипотезу: {h0}")
+    print('\u2500' * 10)
+    print()
+
+
 def kruskal_test(columns: list[pd.Series], rnd: int = 4) -> float:
     p = kruskal(*columns).pvalue
     return round(float(p), rnd)
@@ -90,7 +104,7 @@ def quantitative_and_categorical_3(data: pd.DataFrame, category: str, quantitati
         print("Распределение нормальное, поэтому выбираем ANOVA")
         return anova_test(columns, rnd)
     else:
-        print("Распределение ненормаьлное, поэтому выбираем Краскела-Уоллиса")
+        print("Распределение ненормальное, поэтому выбираем Краскела-Уоллиса")
         return kruskal_test(columns, rnd)
 
 
