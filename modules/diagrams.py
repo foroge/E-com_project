@@ -24,8 +24,8 @@ class DiagramCreator:
         groups = df[column].unique()
         fig, axs = plt.subplots(1, len(groups), figsize=(len(groups) * 2.5, 4))
         for i in range(len(axs)):
-            val = df[df[column] == groups[i]]["payer"]
-            axs[i].pie(val.value_counts(), labels=val.unique(), autopct='%1.0f%%')
+            val = df[df[column] == groups[i]]["payer"].value_counts()
+            axs[i].pie(val, labels=val.index, autopct='%1.0f%%')
             axs[i].set_title(groups[i])
         plt.show()
 
