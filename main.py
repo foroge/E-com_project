@@ -9,6 +9,7 @@ from modules.diagrams import DiagramCreator
 from modules.hypotheses import kruskal_test_region, check_avg_revenue_hypotheses
 from scipy.stats import shapiro, kruskal
 from modules.hypotheses import kruskal_test_region, numeric_and_numeric_hypo
+from modules.hypotheses import duration_of_the_purchase
 from scipy.stats import shapiro
 import matplotlib.pyplot as plt
 import warnings
@@ -118,15 +119,19 @@ for col in ['region', 'device', 'channel']:
 # После проведения попарных сравнений можно заметить, что среднее количество покупок в день у пользователей, пришедших
 # из социальных сетей будет выше, чем у пользователей, пришедших от рекламы блогеров
 
-check_avg_revenue_hypotheses(df, "Cредний чек одинаков в зависимости от региона",
-                    "Cредний чек отличается в зависимости от региона",
-                    'region')
-check_avg_revenue_hypotheses(df, "Cредний чек одинаков в зависимости от рекламного канала",
-                    "Cредний чек отличается в зависимости от рекламного канала",
-                    'channel')
-check_avg_revenue_hypotheses(df, "Cредний чек одинаков в зависимости от времени суток",
-                    "Cредний чек отличается в зависимости от времени суток",
-                    'time_of_day')
+# check_avg_revenue_hypotheses(df, "Cредний чек одинаков в зависимости от региона",
+#                              "Cредний чек отличается в зависимости от региона",
+#                              'region')
+# check_avg_revenue_hypotheses(df, "Cредний чек одинаков в зависимости от рекламного канала",
+#                              "Cредний чек отличается в зависимости от рекламного канала",
+#                              'channel')
+# check_avg_revenue_hypotheses(df, "Cредний чек одинаков в зависимости от времени суток",
+#                              "Cредний чек отличается в зависимости от времени суток",
+#                              'time_of_day')
+
+duration_of_the_purchase(df, "Средняя продолжительность сессии одинакова для покупателей и непокупателей",
+                         "Средняя продолжительность сессии различается для покупателей и непокупателей",
+                         "payer")
 # print(df[df["region"].isnull()])
 # print(df.isna().sum())
 # for column in list(df):
