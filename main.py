@@ -106,9 +106,15 @@ new_df_dub = df[df["user_id"].isin(df["user_id"][df["user_id"].duplicated()])].s
 for col in ['region', 'device', 'channel']:
     df = fill_na(df, column=col, method='mode')
 
-kruskal_test_region(df, 'device')
-kruskal_test_region(df, 'channel')
-
+kruskal_test_region(df,"Среднее количество покупок в день одинаково со всеми устройствами",
+                    "Среднее количество покупок в день различается в зависимости от типа устройства",
+                    'device')
+# Различий между средним количеством покупок в день одинаково независимо от типа устройства во всех регионах
+kruskal_test_region(df ,"Среднее количество покупок в день одинаково в зависимости от типа рекламного канала",
+                    "Среднее количество покупок в день различается в зависимости от типа рекламного канала",
+                    'channel')
+# Между средним количеством покупок в регионе United States есть различия, в зависимости от типа рекламного канала
+# Проведем попарные сравнения
 # print(df[df["region"].isnull()])
 # print(df.isna().sum())
 # for column in list(df):
@@ -148,7 +154,7 @@ kruskal_test_region(df, 'channel')
 # calculator.print_summary_table()
 
 # Графики
-diagrams = DiagramCreator(df)
+# diagrams = DiagramCreator(df)
 # diagrams.pie_of_payers_by_column(column="region")
 # diagrams.pie_of_payers_by_column(column="channel")
 # diagrams.pie_of_payers_by_column(column="device")
