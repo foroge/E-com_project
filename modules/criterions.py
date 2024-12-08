@@ -1,5 +1,11 @@
 import pandas as pd
-from scipy.stats import mannwhitneyu, shapiro, ttest_ind
+from scipy.stats import mannwhitneyu, shapiro, ttest_ind, ttest_ind, chi2_contingency, pearsonr, spearmanr
+from itertools import combinations
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.metrics import r2_score, mean_absolute_percentage_error, mean_absolute_error, mean_squared_error
 
 
 def count_mannwhitneyu_p(br: pd.DataFrame, gd: pd.DataFrame, rnd: int = -1) -> float:
@@ -16,13 +22,6 @@ def count_sthudent(br: pd.DataFrame, gd: pd.DataFrame, rnd: int = -1) -> float:
     if rnd >= 0:
         return float(round(ttest_ind(br, gd, alternative="two-sided").pvalue, rnd))
     return float(ttest_ind(br, gd, alternative="two-sided").pvalue)
-
-import pandas as pd
-import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.metrics import r2_score, mean_absolute_percentage_error, mean_absolute_error, mean_squared_error
 
 
 class MetricModel:
@@ -46,27 +45,6 @@ class MetricModel:
         return np.round(mean_squared_error(self.fact, self.prediction) ** 0.5, n)
 
 
-import pandas as pd
-from scipy.stats import mannwhitneyu, shapiro, ttest_ind, chi2_contingency, pearsonr, spearmanr
-from itertools import combinations
-
-
-def count_mannwhitneyu_p(br: pd.DataFrame, gd: pd.DataFrame, rnd: int = -1) -> float:
-    if rnd >= 0:
-        return float(round(mannwhitneyu(br, gd, alternative="two-sided").pvalue, rnd))
-    return float(mannwhitneyu(br, gd, alternative="two-sided").pvalue)
-
-
-def check_normal(values: pd.Series, alp: float) -> bool:
-    return shapiro(values).pvalue > alp
-
-
-def count_sthudent(br: pd.DataFrame, gd: pd.DataFrame, rnd: int = -1) -> float:
-    if rnd >= 0:
-        return float(round(ttest_ind(br, gd, alternative="two-sided").pvalue, rnd))
-    return float(ttest_ind(br, gd, alternative="two-sided").pvalue)
-
-
 def count_chi2_p(br: pd.DataFrame, gd: pd.DataFrame, rnd: int = -1) -> float:
     crosstab = pd.crosstab(br, gd)
     if rnd >= 0:
@@ -78,8 +56,6 @@ def count_pearson_p(br: pd.DataFrame, gd: pd.DataFrame, rnd: int = -1) -> float:
     if rnd >= 0:
         return float(round(pearsonr(br, gd).pvalue, rnd))
     return float(pearsonr(br, gd).pvalue)
-
-import pandas as pd
 
 
 def all_var(df: pd.DataFrame, group: str, value: str):
@@ -102,12 +78,8 @@ def calc_eta(df: pd.DataFrame, group: str, value: str):
     return round((all_disp / (group_disp + all_disp)) ** 0.5, 4)
 
 
-import pandas as pd
-import scipy.stats as sp
-
-
 def cramers_stat(df: pd.DataFrame, groups: tuple[str, str], round_zn=0):
     matrix = pd.crosstab(df[groups[0]], df[groups[1]]).to_numpy()
     n = matrix.sum()
-    chi2 = sp.chi2_contingency(matrix).statistic
+    chi2 = chi2_contingency(matrix).statistic
     return round((chi2 / (n * (min(matrix.shape) - 1))) ** 0.5, round_zn)
