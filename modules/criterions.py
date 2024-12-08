@@ -1,27 +1,7 @@
 import pandas as pd
-from scipy.stats import mannwhitneyu, shapiro, ttest_ind, ttest_ind, chi2_contingency, pearsonr, spearmanr
-from itertools import combinations
 import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import OneHotEncoder
 from sklearn.metrics import r2_score, mean_absolute_percentage_error, mean_absolute_error, mean_squared_error
-
-
-def count_mannwhitneyu_p(br: pd.DataFrame, gd: pd.DataFrame, rnd: int = -1) -> float:
-    if rnd >= 0:
-        return float(round(mannwhitneyu(br, gd, alternative="two-sided").pvalue, rnd))
-    return float(mannwhitneyu(br, gd, alternative="two-sided").pvalue)
-
-
-def check_normal(values: pd.Series, alp: float) -> bool:
-    return shapiro(values).pvalue > alp
-
-
-def count_sthudent(br: pd.DataFrame, gd: pd.DataFrame, rnd: int = -1) -> float:
-    if rnd >= 0:
-        return float(round(ttest_ind(br, gd, alternative="two-sided").pvalue, rnd))
-    return float(ttest_ind(br, gd, alternative="two-sided").pvalue)
+from scipy.stats import mannwhitneyu, shapiro, ttest_ind, chi2_contingency, pearsonr, spearmanr
 
 
 class MetricModel:
@@ -44,6 +24,21 @@ class MetricModel:
     def pmse(self, n: int = 2):
         return np.round(mean_squared_error(self.fact, self.prediction) ** 0.5, n)
 
+def count_mannwhitneyu_p(br: pd.DataFrame, gd: pd.DataFrame, rnd: int = -1) -> float:
+    if rnd >= 0:
+        return float(round(mannwhitneyu(br, gd, alternative="two-sided").pvalue, rnd))
+    return float(mannwhitneyu(br, gd, alternative="two-sided").pvalue)
+
+
+def check_normal(values: pd.Series, alp: float) -> bool:
+    return shapiro(values).pvalue > alp
+
+
+def count_sthudent(br: pd.DataFrame, gd: pd.DataFrame, rnd: int = -1) -> float:
+    if rnd >= 0:
+        return float(round(ttest_ind(br, gd, alternative="two-sided").pvalue, rnd))
+    return float(ttest_ind(br, gd, alternative="two-sided").pvalue)
+
 
 def count_chi2_p(br: pd.DataFrame, gd: pd.DataFrame, rnd: int = -1) -> float:
     crosstab = pd.crosstab(br, gd)
@@ -56,6 +51,13 @@ def count_pearson_p(br: pd.DataFrame, gd: pd.DataFrame, rnd: int = -1) -> float:
     if rnd >= 0:
         return float(round(pearsonr(br, gd).pvalue, rnd))
     return float(pearsonr(br, gd).pvalue)
+
+
+def count_spearman(br: pd.Series, gd: pd.Series, rnd: int = -1) -> float:
+    spear = spearmanr(br, gd)
+    if rnd >= 0:
+        return f"statistics: {float(round(spear.statistic, rnd))}\npvalue: {float(round(spear.pvalue, rnd))}"
+    return f"statistics: {float(spear.statistic)}\npvalue: {float(spear.pvalue)}"
 
 
 def all_var(df: pd.DataFrame, group: str, value: str):
