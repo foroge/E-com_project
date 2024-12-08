@@ -24,6 +24,7 @@ class MetricModel:
     def pmse(self, n: int = 2):
         return np.round(mean_squared_error(self.fact, self.prediction) ** 0.5, n)
 
+
 def count_mannwhitneyu_p(br: pd.DataFrame, gd: pd.DataFrame, rnd: int = -1) -> float:
     if rnd >= 0:
         return float(round(mannwhitneyu(br, gd, alternative="two-sided").pvalue, rnd))
@@ -53,7 +54,7 @@ def count_pearson_p(br: pd.DataFrame, gd: pd.DataFrame, rnd: int = -1) -> float:
     return float(pearsonr(br, gd).pvalue)
 
 
-def count_spearman(br: pd.Series, gd: pd.Series, rnd: int = -1) -> float:
+def count_spearman(br: pd.Series, gd: pd.Series, rnd: int = -1) -> str:
     spear = spearmanr(br, gd)
     if rnd >= 0:
         return f"statistics: {float(round(spear.statistic, rnd))}\npvalue: {float(round(spear.pvalue, rnd))}"
