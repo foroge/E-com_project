@@ -25,40 +25,12 @@ class MetricModel:
         return np.round(mean_squared_error(self.fact, self.prediction) ** 0.5, n)
 
 
-def count_mannwhitneyu_p(br: pd.DataFrame, gd: pd.DataFrame, rnd: int = -1) -> float:
-    if rnd >= 0:
-        return float(round(mannwhitneyu(br, gd, alternative="two-sided").pvalue, rnd))
-    return float(mannwhitneyu(br, gd, alternative="two-sided").pvalue)
-
-
-def check_normal(values: pd.Series, alp: float) -> bool:
-    return shapiro(values).pvalue > alp
-
-
-def count_sthudent(br: pd.DataFrame, gd: pd.DataFrame, rnd: int = -1) -> float:
-    if rnd >= 0:
-        return float(round(ttest_ind(br, gd, alternative="two-sided").pvalue, rnd))
-    return float(ttest_ind(br, gd, alternative="two-sided").pvalue)
-
-
 def count_chi2_p(br: pd.DataFrame, gd: pd.DataFrame, rnd: int = -1) -> float:
     crosstab = pd.crosstab(br, gd)
     if rnd >= 0:
         return float(round(chi2_contingency(crosstab).pvalue, rnd))
     return float(chi2_contingency(crosstab).pvalue)
 
-
-def count_pearson_p(br: pd.DataFrame, gd: pd.DataFrame, rnd: int = -1) -> float:
-    if rnd >= 0:
-        return float(round(pearsonr(br, gd).pvalue, rnd))
-    return float(pearsonr(br, gd).pvalue)
-
-
-def count_spearman(br: pd.Series, gd: pd.Series, rnd: int = -1) -> str:
-    spear = spearmanr(br, gd)
-    if rnd >= 0:
-        return f"statistics: {float(round(spear.statistic, rnd))}\npvalue: {float(round(spear.pvalue, rnd))}"
-    return f"statistics: {float(spear.statistic)}\npvalue: {float(spear.pvalue)}"
 
 
 def all_var(df: pd.DataFrame, group: str, value: str):

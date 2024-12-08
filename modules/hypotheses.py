@@ -1,6 +1,5 @@
 import pandas as pd
-from scipy.stats import kruskal, mannwhitneyu, ttest_ind, f_oneway
-from modules.criterions import check_normal
+from scipy.stats import kruskal, mannwhitneyu, ttest_ind, f_oneway, pearsonr, spearmanr, shapiro
 from itertools import combinations
 
 
@@ -19,6 +18,10 @@ def cheddock_scale(coef: float) -> str:
     else:
         result = "Корреляции между шкалами нет"
     return result
+
+
+def check_normal(values: pd.Series, alp: float) -> bool:
+    return shapiro(values).pvalue > alp
 
 
 def kruskal_test_region(data: pd.DataFrame, h0: str, h1: str, column: str) -> None:
@@ -102,3 +105,32 @@ def pairwise_comparisons(data: pd.DataFrame, column: str, quantitative: str) -> 
         gd = data[data[column] == combination[1]][quantitative]
         result.append([quantitative_and_categorical_2(br, gd), combination[0], combination[1]])
     return pd.DataFrame(result, columns=head)
+
+
+def count_pearson(br: pd.Series, gd: pd.Series, rnd: int = -1) -> str:
+    pears = pearsonr(br, gd)
+    if rnd >= 0:
+        return f"statistics: {float(round(pears.statistic, rnd))}\npvalue: {float(round(pears.pvalue, rnd))}"
+    return f"statistics: {float(pears.statistic)}\npvalue: {float(pears.pvalue)}"
+
+
+def count_spearman(br: pd.Series, gd: pd.Series, rnd: int = -1) -> str:
+    spear = spearmanr(br, gd)
+    if rnd >= 0:
+        return f"statistics: {float(round(spear.statistic, rnd))}\npvalue: {float(round(spear.pvalue, rnd))}"
+    return f"statistics: {float(spear.statistic)}\npvalue: {float(spear.pvalue)}"
+
+
+def numeric_and_numeric(br: pd.Series, gd: pd.Series, rnd: int = 4) -> str:
+    if check_normal(br, 0.05) and check_normal(gd, 0.05):
+        print(f"Данные распределены нормально, используем корреляцию Пирсона")
+        return count_pearson(br, gd, rnd)
+    else:
+        print(f"Данные распределены ненормально, используем корреляцию Спирмена")
+        return count_spearman(br, gd, rnd)
+
+
+def numeric_and_numeric_hypo(br: pd.Series, gd: pd.Series, h0: str, h1: str):
+    print(f"Проверка гипотезы: '{h0}'\nс альтернативной гипозетой: '{h1}'")
+    print("Оба столбца количественные")
+    print(numeric_and_numeric(br, gd))
