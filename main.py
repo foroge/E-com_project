@@ -147,10 +147,13 @@ calculator = Calculator(df)
 # calculator.print_summary_table()
 
 # Графики
-# diagrams = DiagramCreator(df)
+diagrams = DiagramCreator(df)
 # diagrams.pie_of_payers_by_column(column="region")
 # diagrams.pie_of_payers_by_column(column="channel")
 # diagrams.pie_of_payers_by_column(column="device")
-#
-#
+# diagrams.hist_of_column_by_payer(column="region")
+# diagrams.hist_of_column_by_payer(column="device")
+# diagrams.hist_of_column_by_payer(column="channel")
+# diagrams.hist_of_payers_count_by_column(column="payment_type")
+# diagrams.hist_of_payers_by_time()
 # plt.show()
