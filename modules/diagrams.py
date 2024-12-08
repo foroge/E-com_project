@@ -3,6 +3,17 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
+def to_string_month(month: int) -> str:
+    months = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь",
+              "Ноябрь", "Декабрь"]
+    return months[month - 1]
+
+
+def to_string_day(day: int) -> str:
+    days = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]
+    return days[day - 1]
+
+
 class DiagramCreator:
     def __init__(self, df: pd.DataFrame):
         self.df = df
@@ -34,4 +45,29 @@ class DiagramCreator:
             df = self.df
         sns.histplot(df[df["payer"] == "yes"], x=column)
         plt.xticks(rotation=15)
+        plt.show()
+
+    def hist_of_payers_by_time(self, df: pd.DataFrame | None = None) -> None:
+        if df is None:
+            df = self.df
+
+        fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(11, 4))
+
+        months = df[df["payer"] == "yes"]["session_date"].dt.month.value_counts().reset_index()
+        months["month"] = months["session_date"].map(to_string_month)
+        months = months.sort_values("session_date")[["month", "count"]]
+        sns.barplot(months, x="month", y="count", ax=ax1)
+        ax1.tick_params(axis='x', rotation=20)
+        ax1.set_title("по месяцам")
+
+        days = df[df["payer"] == "yes"]["day"].value_counts().reset_index()
+        days["days"] = days["day"].map(to_string_day)
+        days = days.sort_values("day")[["days", "count"]]
+        sns.barplot(days, x="days", y="count", ax=ax2)
+        ax2.set_title("по дням недели")
+
+        time = df[df["payer"] == "yes"]["time_of_day"].value_counts()
+        sns.barplot(time, ax=ax3)
+        ax3.set_title("по времени суток")
+        plt.suptitle("Количество покупок")
         plt.show()
