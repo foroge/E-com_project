@@ -30,7 +30,7 @@ def kruskal_test_region(data: pd.DataFrame, h0: str, h1: str, column: str) -> No
         region_data = grouped_data[grouped_data["region"] == region]
         print(f"Регион: {region}")
 
-        p_value = kruskal_test(region_data, x=column, y="purchases")
+        p_value = kruskal_test(region_data, column, "purchases")
         print(f"Тест Краскела-Уоллиса: p-value = {p_value}")
         if p_value < 0.05:
             print(f"Для региона {region} принимаем альтернативную гипотезу")
