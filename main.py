@@ -10,6 +10,7 @@ from modules.hypotheses import kruskal_test_region, check_avg_revenue_hypotheses
 from scipy.stats import shapiro, kruskal
 from modules.hypotheses import kruskal_test_region, numeric_and_numeric_hypo
 from modules.hypotheses import duration_of_the_purchase
+from modules.hypotheses import duration_depends_on_the_payment_type
 from scipy.stats import shapiro
 import matplotlib.pyplot as plt
 import warnings
@@ -128,10 +129,10 @@ for col in ['region', 'device', 'channel']:
 # check_avg_revenue_hypotheses(df, "Cредний чек одинаков в зависимости от времени суток",
 #                              "Cредний чек отличается в зависимости от времени суток",
 #                              'time_of_day')
-
-duration_of_the_purchase(df, "Средняя продолжительность сессии одинакова для покупателей и непокупателей",
-                         "Средняя продолжительность сессии различается для покупателей и непокупателей",
-                         "payer")
+duration_depends_on_the_payment_type(df, "Длительность сессии одинакова у пользователей с разными типами оплаты",
+                                     "Длительность сессии различается у пользователей с разными типами оплаты",
+                                     "payment_type")
+# print(df.T)
 # print(df[df["region"].isnull()])
 # print(df.isna().sum())
 # for column in list(df):
@@ -184,8 +185,8 @@ duration_of_the_purchase(df, "Средняя продолжительность 
 # plt.show()
 
 
-h0 = "Средняя продолжительность сессии одинакова у платящих и неплатящих пользователей"
-h1 = "Средняя продолжительность сессии не совпадает у платящих и неплатящих пользователей"
-numeric_and_numeric_hypo(df["sessiondurationsec"], df["sum"], h0, h1)
-print("коэффициент корреляции ниже 0.3, так что по шкале Чеддока можно сказать, что корреляция отсутствует")
-print("т.к. p-value больше 0.05, альтернативную гипотезу принимать нельзя")
+# h0 = "Средняя продолжительность сессии одинакова у платящих и неплатящих пользователей"
+# h1 = "Средняя продолжительность сессии не совпадает у платящих и неплатящих пользователей"
+# numeric_and_numeric_hypo(df["sessiondurationsec"], df["sum"], h0, h1)
+# print("коэффициент корреляции ниже 0.3, так что по шкале Чеддока можно сказать, что корреляция отсутствует")
+# print("т.к. p-value больше 0.05, альтернативную гипотезу принимать нельзя")

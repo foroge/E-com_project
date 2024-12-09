@@ -77,8 +77,23 @@ def duration_of_the_purchase(data: pd.DataFrame, h0: str, h1: str, column: str) 
     not_buyers = data[data[column] == "no"]["sessiondurationsec"]
 
     p_value = quantitative_and_categorical_2(buyers, not_buyers, 4)
-    print(f"Корреляцию ********: p-value = {p_value}")
+    print(f"U-криитерий Манна-Уитни: p-value = {p_value}")
 
+    if p_value < 0.05:
+        print(f"Принимаем альтернативную гипотезу: {h1}")
+    else:
+        print(f"Нельзя отвергнуть нулевую гипотезу: {h0}")
+    print('\u2500' * 10)
+    print()
+
+
+def duration_depends_on_the_payment_type(data: pd.DataFrame, h0: str, h1: str, column: str) -> None:
+    print(f"Проверка гипотезы: '{h0}'\nс альтернативной гипозетой: '{h1}'")
+    print('\u2500' * 10)
+
+    p_value = quantitative_and_categorical(data, column, "sessiondurationsec", 4)
+
+    print(f"Тест Краскела-Уоллиса: p-value = {p_value}")
     if p_value < 0.05:
         print(f"Принимаем альтернативную гипотезу: {h1}")
     else:
@@ -102,7 +117,7 @@ def quantitative_and_categorical(data: pd.DataFrame, category: str, quantitative
         print("Уровней больше 2-х, значит выбираем между ANOVA и Краскела-Уоллиса")
         return quantitative_and_categorical_3(data, category, quantitative, rnd)
     else:
-        print("Всего 2 уровня, значит выбираем между Т-критерием Стьюдента и U-крпитерием Манны-Уитни")
+        print("Всего 2 уровня, значит выбираем между Т-критерием Стьюдента и U-критерием Манны-Уитни")
         columns = data[category].unique()
         br = data[data[category] == columns[0]][quantitative]
         gd = data[data[category] == columns[1]][quantitative]
