@@ -91,8 +91,7 @@ def duration_depends_on_the_payment_type(data: pd.DataFrame, h0: str, h1: str, c
     print(f"Проверка гипотезы: '{h0}'\nс альтернативной гипозетой: '{h1}'")
     print('\u2500' * 10)
 
-    p_value = quantitative_and_categorical(data, column, "sessiondurationsec", 4)
-
+    p_value = quantitative_and_categorical(data[data["payer"] == "yes"], column, "sessiondurationsec", 4)
     print(f"Тест Краскела-Уоллиса: p-value = {p_value}")
     if p_value < 0.05:
         print(f"Принимаем альтернативную гипотезу: {h1}")
@@ -136,6 +135,7 @@ def quantitative_and_categorical_2(br: pd.DataFrame, gd: pd.DataFrame, rnd: int 
 def quantitative_and_categorical_3(data: pd.DataFrame, category: str, quantitative: str, rnd: int = 4) -> float:
     unique = data[category].unique()
     columns = [data[data[category] == column][quantitative] for column in unique]
+    # print(columns)
     if all([check_normal(column, 0.05) for column in columns]):
         print("Распределение нормальное, поэтому выбираем ANOVA")
         return anova_test(columns, rnd)
