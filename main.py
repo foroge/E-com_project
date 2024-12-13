@@ -15,6 +15,7 @@ from scipy.stats import shapiro, kruskal
 from modules.hypotheses import kruskal_test_region, numeric_and_numeric_hypo
 from modules.hypotheses import duration_of_the_purchase
 from modules.hypotheses import duration_depends_on_the_payment_type
+from modules.hypotheses import duration_depends_on_the_pay_or_no
 from modules.criterions import MetricModel
 from scipy.stats import shapiro
 import matplotlib.pyplot as plt
@@ -163,6 +164,9 @@ for col in ['region', 'device', 'channel']:
 # duration_depends_on_the_payment_type(df, "Длительность сессии одинакова у пользователей с разными типами оплаты",
 #                                      "Длительность сессии различается у пользователей с разными типами оплаты",
 #                                      "payment_type")
+duration_depends_on_the_pay_or_no(df, "Длительность сессии одинакова у платящих и не платящих пользователей",
+                                  "Длительность сессии различается у платящих и не платящих пользователей",
+                                  "payer")
 # print(df.T)
 # print(df[df["region"].isnull()])
 # print(df.isna().sum())
@@ -227,14 +231,14 @@ x_train, x_test, y_train, y_test = train_test_split(df[selling_columns], df["sum
                                                     random_state=0)
 x_train_orig = x_train.copy()
 x_test_orig = x_test.copy()
-
-sea = sns.FacetGrid(x_train, col="region", height=4, aspect=1.5)
-sns.scatterplot(x=x_train, y=y_train)
-plt.show()
+# print(x_train.drop(columns="region").tail())
+# sns.scatterplot(x=x_train["region"], y=y_train)
+# plt.show()
 
 ohe = OneHotEncoder(sparse_output=False, handle_unknown="ignore")  # drop="first"
 for i in ["region", "channel"]:
     x_train, x_test = fit_transform(x_train, x_test, ohe, i)
+
 # y_train = ohe.fit_transform(y_train.to_frame())
 # y_test = ohe.fit_transform(y_test.to_frame())
 
