@@ -101,6 +101,20 @@ def duration_depends_on_the_payment_type(data: pd.DataFrame, h0: str, h1: str, c
     print()
 
 
+def duration_depends_on_the_pay_or_no(data: pd.DataFrame, h0: str, h1: str, column: str) -> None:
+    print(f"Проверка гипотезы: '{h0}'\nс альтернативной гипозетой: '{h1}'")
+    print('\u2500' * 10)
+
+    p_value = quantitative_and_categorical(data, column, "sessiondurationsec", 4)
+    print(f"U-криитерий Манна-Уитни: p-value = {p_value}")
+    if p_value < 0.05:
+        print(f"Принимаем альтернативную гипотезу: {h1}")
+    else:
+        print(f"Нельзя отвергнуть нулевую гипотезу: {h0}")
+    print('\u2500' * 10)
+    print()
+
+
 def kruskal_test(columns: list[pd.Series], rnd: int = 4) -> float:
     p = kruskal(*columns).pvalue
     return round(float(p), rnd)
@@ -128,7 +142,7 @@ def quantitative_and_categorical_2(br: pd.DataFrame, gd: pd.DataFrame, rnd: int 
         print("Распределение нормальное, поэтому выбираем Т-критерий Стьюдента")
         return float(round(ttest_ind(br, gd, alternative="two-sided").pvalue, rnd))
     else:
-        print("Распределение ненормальное, поэтому выбираем U-крпитерий Манны-Уитни")
+        print("Распределение ненормальное, поэтому выбираем U-критерий Манны-Уитни")
         return float(round(mannwhitneyu(br, gd, alternative="two-sided").pvalue, rnd))
 
 

@@ -15,6 +15,7 @@ from scipy.stats import shapiro, kruskal
 from modules.hypotheses import kruskal_test_region, numeric_and_numeric_hypo
 from modules.hypotheses import duration_of_the_purchase
 from modules.hypotheses import duration_depends_on_the_payment_type
+from modules.hypotheses import duration_depends_on_the_pay_or_no
 from modules.criterions import MetricModel
 from scipy.stats import shapiro
 import matplotlib.pyplot as plt
@@ -162,6 +163,9 @@ for col in ['region', 'device', 'channel']:
 # duration_depends_on_the_payment_type(df, "Длительность сессии одинакова у пользователей с разными типами оплаты",
 #                                      "Длительность сессии различается у пользователей с разными типами оплаты",
 #                                      "payment_type")
+duration_depends_on_the_pay_or_no(df, "Длительность сессии одинакова у платящих и не платящих пользователей",
+                                  "Длительность сессии различается у платящих и не платящих пользователей",
+                                  "payer")
 # print(df.T)
 # print(df[df["region"].isnull()])
 # print(df.isna().sum())
@@ -240,9 +244,9 @@ lin_reg = LinearRegression()
 lin_reg.fit(x_train, y_train)
 prediction = lin_reg.predict(x_test)
 prediction = pd.concat([x_test_orig.reset_index(drop=True), pd.DataFrame(prediction)], axis=1)
-print(prediction.rename({0: "revenue"}, axis=1))
-print()
-print(prediction.groupby(["region", "channel"]).agg("max").sort_values(0).rename({0: "max_revenue"}, axis=1))
+# print(prediction.rename({0: "revenue"}, axis=1))
+# print()
+# print(prediction.groupby(["region", "channel"]).agg("max").sort_values(0).rename({0: "max_revenue"}, axis=1))
 # print()
 # print(df.groupby(["region", "channel"])["sum"].agg("mean").sort_values())
 # print()
@@ -265,4 +269,3 @@ print(prediction.groupby(["region", "channel"]).agg("max").sort_values(0).rename
 # print(log_prediction)
 # print_metrics_model(y_train, lin_reg.predict(y_train))
 # print_metrics_model(y_test, log_prediction)
-
