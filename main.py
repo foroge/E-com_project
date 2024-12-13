@@ -2,6 +2,10 @@ import numpy
 import pandas as pd
 import seaborn as sns
 import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression, LogisticRegression
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error, mean_absolute_percentage_error
 # import missingno as msno
 from modules.preload_data import fill_na, fill_errors
 from modules.calculations import calculate_normal_time, Calculator
@@ -11,6 +15,7 @@ from scipy.stats import shapiro, kruskal
 from modules.hypotheses import kruskal_test_region, numeric_and_numeric_hypo
 from modules.hypotheses import duration_of_the_purchase
 from modules.hypotheses import duration_depends_on_the_payment_type
+from modules.criterions import MetricModel
 from scipy.stats import shapiro
 import matplotlib.pyplot as plt
 import warnings
@@ -29,7 +34,7 @@ def replace_mistakes(data: pd.DataFrame) -> pd.DataFrame:
     data["region"] = data["region"].replace("Franсe", "France")  # it's NOT the same
 
     data["region"] = data["region"].replace("germany", "Germany")
-    data["region"] = data["region"].replace("UK", "UК")  # it's NOT the same
+    data["region"] = data["region"].replace("UК", "UK")  # it's NOT the same
 
     data["channel"] = data["channel"].replace("контексная реклама", "контекстная реклама")
     data["device"] = data["device"].replace("Android", "android")  # idk what name we will use? but i like this
@@ -93,6 +98,31 @@ def fill_missing_data_categorical(data: pd.DataFrame) -> pd.DataFrame:
     return data
 
 
+def fit_transform(train: pd.DataFrame, test: pd.DataFrame, _ohe: OneHotEncoder, column: str = "") -> \
+        (pd.DataFrame, pd.DataFrame):
+    # _ohe.fit(x_train[[column]])
+    # pd.Series.value_counts()
+    # print(_ohe.fit_transform(x_train[[column]].values).toarray())
+    train_new = pd.DataFrame(_ohe.fit_transform(train[[column]]), columns=_ohe.categories_, index=train.index)
+    train_other_cols = train.drop(columns=column)
+    train = pd.concat([train_new, train_other_cols], axis=1)
+
+    test_new = pd.DataFrame(_ohe.fit_transform(test[[column]]), columns=_ohe.categories_, index=test.index)
+    test_other_cols = test.drop(columns=column)
+    test = pd.concat([test_new, test_other_cols], axis=1)
+
+    # _x_train[column] = _ohe.fit_transform(_x_train[[column]])
+    # _x_test[column] = _ohe.fit_transform(_x_test[[column]])
+    return train, test
+
+
+def print_metrics_model(fact: pd.DataFrame, predict: np.ndarray) -> None:
+    print(f"R2 = {r2_score(fact, predict)}")
+    print(f"MAPE = {round(mean_absolute_percentage_error(fact, predict) * 100, 2)}")
+    print(f"MAE = {round(mean_absolute_error(fact, predict), 2)}")
+    print(f"RMSE = {round(mean_squared_error(fact, predict) ** 0.5, 2)}")
+
+
 df = pd.read_csv("./data/data.csv", encoding="utf-8", sep=",")
 df.columns = df.columns.str.lower().str.replace(" ", "_")
 df = replace_mistakes(df)
@@ -129,9 +159,9 @@ for col in ['region', 'device', 'channel']:
 # check_avg_revenue_hypotheses(df, "Cредний чек одинаков в зависимости от времени суток",
 #                              "Cредний чек отличается в зависимости от времени суток",
 #                              'time_of_day')
-duration_depends_on_the_payment_type(df, "Длительность сессии одинакова у пользователей с разными типами оплаты",
-                                     "Длительность сессии различается у пользователей с разными типами оплаты",
-                                     "payment_type")
+# duration_depends_on_the_payment_type(df, "Длительность сессии одинакова у пользователей с разными типами оплаты",
+#                                      "Длительность сессии различается у пользователей с разными типами оплаты",
+#                                      "payment_type")
 # print(df.T)
 # print(df[df["region"].isnull()])
 # print(df.isna().sum())
@@ -190,3 +220,49 @@ duration_depends_on_the_payment_type(df, "Длительность сессии 
 # numeric_and_numeric_hypo(df["sessiondurationsec"], df["sum"], h0, h1)
 # print("коэффициент корреляции ниже 0.3, так что по шкале Чеддока можно сказать, что корреляция отсутствует")
 # print("т.к. p-value больше 0.05, альтернативную гипотезу принимать нельзя")
+
+selling_columns = ["region", "channel"]
+x_train, x_test, y_train, y_test = train_test_split(df[selling_columns], df["sum"], test_size=0.15, random_state=0)
+x_train_orig = x_train.copy()
+x_test_orig = x_test.copy()
+# print(x_train.drop(columns="region").tail())
+# sns.scatterplot(x=x_train["region"], y=y_train)
+# plt.show()
+
+ohe = OneHotEncoder(sparse_output=False, handle_unknown="ignore")  # drop="first"
+for i in selling_columns:
+    x_train, x_test = fit_transform(x_train, x_test, ohe, i)
+
+# y_train = ohe.fit_transform(y_train.to_frame())
+# y_test = ohe.fit_transform(y_test.to_frame())
+
+lin_reg = LinearRegression()
+lin_reg.fit(x_train, y_train)
+prediction = lin_reg.predict(x_test)
+prediction = pd.concat([x_test_orig.reset_index(drop=True), pd.DataFrame(prediction)], axis=1)
+print(prediction)
+print()
+print(prediction.groupby(["region", "channel"]).agg("max").sort_values(0))
+# print()
+# print(df.groupby(["region", "channel"])["sum"].agg("mean").sort_values())
+# print()
+# print(pd.concat([x_test_orig.reset_index(drop=True), y_test.reset_index()], axis=1).groupby(["region", "channel"])["sum"].agg("max").sort_values())
+# print()
+# print(pd.concat([x_train_orig.reset_index(drop=True), y_train.reset_index()], axis=1).groupby(["region", "channel"])["sum"].agg("max").sort_values())
+
+# print(prediction[prediction["channel"] == "социальные сети"][0].value_counts())
+# max_of_predict = prediction.max().to_frame().T[0].values[0]
+# print(prediction[prediction[0] == max_of_predict])
+# print(prediction[prediction[0] == 1704])
+# print_metrics_model(y_train, lin_reg.predict(x_train))
+# print_metrics_model(y_test, prediction)
+# print("\u2501" * 50)
+
+# print("Log reg")
+# log_reg = LogisticRegression(solver="liblinear", random_state=0)
+# log_reg.fit(x_train, y_train)
+# log_prediction = log_reg.predict(x_test)
+# print(log_prediction)
+# print_metrics_model(y_train, lin_reg.predict(y_train))
+# print_metrics_model(y_test, log_prediction)
+
