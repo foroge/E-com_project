@@ -16,11 +16,12 @@ def to_string_day(day: int) -> str:
 
 class DiagramCreator:
     def __init__(self, df: pd.DataFrame):
-        self.df = df
+        self.df = df.copy()
 
     def pie_of_payers_by_column(self, df: pd.DataFrame | None = None, column: str = "") -> None:
         if df is None:
             df = self.df
+        df["payer"] = df["payer"].map(lambda x: "купил" if x == "yes" else "не купил")
         groups = df[column].unique()
         fig, axs = plt.subplots(1, len(groups), figsize=(len(groups) * 2.5, 4))
         for i in range(len(axs)):
@@ -40,11 +41,13 @@ class DiagramCreator:
         axes[1].set_title("Неплатящие")
         plt.show()
 
-    def hist_of_payers_count_by_column(self, df: pd.DataFrame | None = None, column: str = "") -> None:
+    def hist_of_payers_count_by_column(self, df: pd.DataFrame | None = None, column: str = "", russian_name: str = "")\
+            -> None:
         if df is None:
             df = self.df
         sns.histplot(df[df["payer"] == "yes"], x=column)
         plt.xticks(rotation=15)
+        plt.suptitle(f"Количество покупок по {russian_name}")
         plt.show()
 
     def hist_of_payers_by_time(self, df: pd.DataFrame | None = None) -> None:
