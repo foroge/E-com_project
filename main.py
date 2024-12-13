@@ -67,7 +67,7 @@ def to_time_columns(data: pd.DataFrame) -> pd.DataFrame:
 
 
 def fill_all_errors(data: pd.DataFrame) -> pd.DataFrame:
-    data = fill_errors(data, "sessiondurationsec", "median")
+    data = fill_errors(data, "sessiondurationsec", "median", fill_only="up")
     data = fill_errors(data, "revenue", "median")
     return data
 
@@ -110,7 +110,8 @@ def fit_transform(train: pd.DataFrame, test: pd.DataFrame, _ohe: OneHotEncoder, 
     test_new = pd.DataFrame(_ohe.fit_transform(test[[column]]), columns=_ohe.categories_, index=test.index)
     test_other_cols = test.drop(columns=column)
     test = pd.concat([test_new, test_other_cols], axis=1)
-
+    train.columns = list(map(lambda x: x[0] if isinstance(x, tuple) else x, train.columns))
+    test.columns = list(map(lambda x: x[0] if isinstance(x, tuple) else x, test.columns))
     # _x_train[column] = _ohe.fit_transform(_x_train[[column]])
     # _x_test[column] = _ohe.fit_transform(_x_test[[column]])
     return train, test
@@ -222,27 +223,29 @@ for col in ['region', 'device', 'channel']:
 # print("т.к. p-value больше 0.05, альтернативную гипотезу принимать нельзя")
 
 selling_columns = ["region", "channel"]
-x_train, x_test, y_train, y_test = train_test_split(df[selling_columns], df["sum"], test_size=0.15, random_state=0)
+x_train, x_test, y_train, y_test = train_test_split(df[selling_columns], df["sum"], test_size=0.15,
+                                                    random_state=0)
 x_train_orig = x_train.copy()
 x_test_orig = x_test.copy()
-# print(x_train.drop(columns="region").tail())
-# sns.scatterplot(x=x_train["region"], y=y_train)
-# plt.show()
+
+sea = sns.FacetGrid(x_train, col="region", height=4, aspect=1.5)
+sns.scatterplot(x=x_train, y=y_train)
+plt.show()
 
 ohe = OneHotEncoder(sparse_output=False, handle_unknown="ignore")  # drop="first"
-for i in selling_columns:
+for i in ["region", "channel"]:
     x_train, x_test = fit_transform(x_train, x_test, ohe, i)
-
 # y_train = ohe.fit_transform(y_train.to_frame())
 # y_test = ohe.fit_transform(y_test.to_frame())
 
 lin_reg = LinearRegression()
 lin_reg.fit(x_train, y_train)
 prediction = lin_reg.predict(x_test)
+print_metrics_model(y_test, prediction)
 prediction = pd.concat([x_test_orig.reset_index(drop=True), pd.DataFrame(prediction)], axis=1)
 print(prediction.rename({0: "revenue"}, axis=1))
 print()
-print(prediction.groupby(["region", "channel"]).agg("max").sort_values(0).rename({0: "max_revenue"}, axis=1))
+print(prediction.groupby(selling_columns).agg("max").sort_values(0).rename({0: "max_revenue"}, axis=1))
 # print()
 # print(df.groupby(["region", "channel"])["sum"].agg("mean").sort_values())
 # print()

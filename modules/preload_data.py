@@ -36,12 +36,14 @@ def fill_na(data: pd.DataFrame | pd.Series, column: str, method: str, group: lis
     return data
 
 
-def fill_errors(df: pd.DataFrame, columns: str | list[str], fill_with: str, err_range: float = 3) -> pd.DataFrame:
+def fill_errors(df: pd.DataFrame, columns: str | list[str], fill_with: str, err_range: float = 3,
+                fill_only: str = "both") -> pd.DataFrame:
     """
     :param df: pd.DataFrame
     :param columns: list of column names
     :param fill_with: ["drop", "median", "mean", "mode"]
     :param err_range: 3 for strong mistakes, 1.5 for usual mistakes
+    :param fill_only: ["both", "up", "down"]
     :return: modified data
     """
     if isinstance(columns, str):
@@ -61,7 +63,6 @@ def fill_errors(df: pd.DataFrame, columns: str | list[str], fill_with: str, err_
                 continue
             case _:
                 raise ValueError(f"unable to fill column {col} with {fill_with}")
-        df[col] = df[col].map(lambda x: med if x >= err_max or x <= err_min else x)
+        df[col] = df[col].map(lambda x: med if x >= err_max and fill_only in ["both", "up"]
+                                               or x <= err_min and fill_only in ["both", "down"] else x)
     return df
-
-
