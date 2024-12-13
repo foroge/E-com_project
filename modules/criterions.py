@@ -32,7 +32,6 @@ def count_chi2_p(br: pd.DataFrame, gd: pd.DataFrame, rnd: int = -1) -> float:
     return float(chi2_contingency(crosstab).pvalue)
 
 
-
 def all_var(df: pd.DataFrame, group: str, value: str):
     mean = df[value].mean()
     mean_group = df.groupby(group)[value].mean()

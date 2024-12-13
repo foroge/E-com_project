@@ -12,7 +12,7 @@ def calculate_normal_time(sec: int) -> str:
 def to_string_month(month: int) -> str:
     months = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь",
               "Ноябрь", "Декабрь"]
-    return months[month]
+    return months[month - 1]
 
 
 class Calculator:
