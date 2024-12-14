@@ -226,38 +226,41 @@ for col in ['region', 'device', 'channel']:
 # print("коэффициент корреляции ниже 0.3, так что по шкале Чеддока можно сказать, что корреляция отсутствует")
 # print("т.к. p-value больше 0.05, альтернативную гипотезу принимать нельзя")
 
-selling_columns_cat = ["region", "channel"]
-selling_columns_num = []
-x_train, x_test, y_train, y_test = train_test_split(df[selling_columns_cat + selling_columns_num],
-                                                    df["sum"], test_size=0.15, random_state=0)
-x_train_orig = x_train.copy()
-x_test_orig = x_test.copy()
-# print(x_train.drop(columns="region").tail())
 
-ohe = OneHotEncoder(sparse_output=False, handle_unknown="ignore")  # drop="first"
-for i in selling_columns_cat:
-    x_train, x_test = fit_transform(x_train, x_test, ohe, i)
 
-# y_train = ohe.fit_transform(y_train.to_frame())
-# y_test = ohe.fit_transform(y_test.to_frame())
 
-lin_reg = LinearRegression()
-lin_reg.fit(x_train, y_train)
-prediction = lin_reg.predict(x_test)
-
-print(f"Были выбраны шкалы {", ".join(selling_columns_cat)}, {", ".join(selling_columns_num)}, "
-      f"потому что они должны влиять на суммы продаж\n")
-print("Метрики модели")
-print_metrics_model(y_test, prediction)
-prediction = pd.concat([x_test_orig.reset_index(drop=True), pd.DataFrame(prediction)], axis=1)
-print("\u2500" * 10)
-print("Первые 5 значений предсказания для тестовой выборки:")
-print(prediction.head().rename({0: "revenue"}, axis=1))
-print("\u2500" * 10)
-print("Максимальные значения дохода для групп в предсказании:")
-print(prediction.groupby(selling_columns_cat + selling_columns_num).agg("max")
-      .sort_values(0).rename({0: "max_revenue"}, axis=1))
-print("\u2500" * 10)
+# selling_columns_cat = ["region", "channel"]
+# selling_columns_num = []
+# x_train, x_test, y_train, y_test = train_test_split(df[selling_columns_cat + selling_columns_num],
+#                                                     df["sum"], test_size=0.15, random_state=0)
+# x_train_orig = x_train.copy()
+# x_test_orig = x_test.copy()
+# # print(x_train.drop(columns="region").tail())
+#
+# ohe = OneHotEncoder(sparse_output=False, handle_unknown="ignore")  # drop="first"
+# for i in selling_columns_cat:
+#     x_train, x_test = fit_transform(x_train, x_test, ohe, i)
+#
+# # y_train = ohe.fit_transform(y_train.to_frame())
+# # y_test = ohe.fit_transform(y_test.to_frame())
+#
+# lin_reg = LinearRegression()
+# lin_reg.fit(x_train, y_train)
+# prediction = lin_reg.predict(x_test)
+#
+# print(f"Были выбраны шкалы {", ".join(selling_columns_cat)}, {", ".join(selling_columns_num)}, "
+#       f"потому что они должны влиять на суммы продаж\n")
+# print("Метрики модели")
+# print_metrics_model(y_test, prediction)
+# prediction = pd.concat([x_test_orig.reset_index(drop=True), pd.DataFrame(prediction)], axis=1)
+# print("\u2500" * 10)
+# print("Первые 5 значений предсказания для тестовой выборки:")
+# print(prediction.head().rename({0: "revenue"}, axis=1))
+# print("\u2500" * 10)
+# print("Максимальные значения дохода для групп в предсказании:")
+# print(prediction.groupby(selling_columns_cat + selling_columns_num).agg("max")
+#       .sort_values(0).rename({0: "max_revenue"}, axis=1))
+# print("\u2500" * 10)
 
 # for i in selling_columns_cat + selling_columns_num:
 #     sns.scatterplot(x=x_train_orig[i], y=y_train)
@@ -274,6 +277,10 @@ print("\u2500" * 10)
 #     sns.histplot(x=x_train_orig[i], y=y_train)
 #     plt.xticks(rotation=-15)
 #     plt.show()
+
+
+
+
 
 # print()
 # print(df.groupby(["region", "channel"])["sum"].agg("mean").sort_values())

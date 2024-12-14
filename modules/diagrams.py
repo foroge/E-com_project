@@ -32,13 +32,19 @@ class DiagramCreator:
 
     def hist_of_column_by_payer(self, df: pd.DataFrame | None = None, column: str = "") -> None:
         if df is None:
-            df = self.df
-        sea = sns.FacetGrid(df, col="payer", height=4, aspect=1.5)
-        sea.map(sns.histplot, column)
-        sea.set_xticklabels(rotation=-15)
-        axes = sea.axes.flatten()
-        axes[0].set_title("Платящие")
-        axes[1].set_title("Неплатящие")
+            df = self.df.copy()
+        df["payer"] = df["payer"].map(lambda x: "Платящие" if x == "yes" else "Неплятящие")
+        sns.countplot(df, x=column, hue="payer")
+        plt.xticks(rotation=-20)
+        plt.legend()
+
+
+        # sea = sns.FacetGrid(df, col="payer", height=4, aspect=1.5)
+        # sea.map(sns.histplot, column)
+        # sea.set_xticklabels(rotation=-15)
+        # axes = sea.axes.flatten()
+        # axes[0].set_title("Платящие")
+        # axes[1].set_title("Неплатящие")
         plt.show()
 
     def hist_of_payers_count_by_column(self, df: pd.DataFrame | None = None, column: str = "", russian_name: str = "")\
