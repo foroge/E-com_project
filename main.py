@@ -196,7 +196,7 @@ for col in ['region', 'device', 'channel']:
 
 
 # Расчеты
-calculator = Calculator(df)
+# calculator = Calculator(df)
 # calculator.print_mean_sum_with_and_without_payers()
 # calculator.print_session_duration_by_column(column="channel", russian_name="Рекламный канал")
 # calculator.print_session_duration_by_column(column="device", russian_name="Девайс")
@@ -205,7 +205,7 @@ calculator = Calculator(df)
 # calculator.print_top3_sum_by_column(column="region", russian_name="Регион")
 # calculator.print_mean_purchase_count_by_1_customer()
 # calculator.print_top3_months_mean_sum_by_column(column="region", russian_name="регионам")
-calculator.print_top3_mau_column(column="channel", russian_name="рекламным каналам")
+# calculator.print_top3_mau_column(column="channel", russian_name="рекламным каналам")
 # calculator.print_summary_table()
 
 # Графики

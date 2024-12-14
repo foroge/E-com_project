@@ -49,7 +49,7 @@ class DiagramCreator:
         sns.countplot(df, x=column, hue="payer")
         plt.xticks(rotation=-20)
         plt.legend()
-
+        plt.suptitle("Количество платящих и неплатящих пользователей по фактору")
 
         # sea = sns.FacetGrid(df, col="payer", height=4, aspect=1.5)
         # sea.map(sns.histplot, column)
