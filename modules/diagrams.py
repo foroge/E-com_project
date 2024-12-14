@@ -19,6 +19,12 @@ class DiagramCreator:
         self.df = df.copy()
 
     def pie_of_payers_by_column(self, df: pd.DataFrame | None = None, column: str = "") -> None:
+        """
+        :param df: pd.DataFrame
+        :param column: column for grouping
+        :return: None, showing pie diagram
+        """
+
         if df is None:
             df = self.df
         df["payer"] = df["payer"].map(lambda x: "купил" if x == "yes" else "не купил")
@@ -31,6 +37,12 @@ class DiagramCreator:
         plt.show()
 
     def hist_of_column_by_payer(self, df: pd.DataFrame | None = None, column: str = "") -> None:
+        """
+        :param df: pd.DataFrame
+        :param column: column for showing count
+        :return: None, showing hist plot
+        """
+
         if df is None:
             df = self.df.copy()
         df["payer"] = df["payer"].map(lambda x: "Платящие" if x == "yes" else "Неплятящие")
@@ -49,6 +61,13 @@ class DiagramCreator:
 
     def hist_of_payers_count_by_column(self, df: pd.DataFrame | None = None, column: str = "", russian_name: str = "")\
             -> None:
+        """
+        :param df: pd.DataFrame
+        :param column: column for groups
+        :param russian_name: using for title f"Количество покупок по {russian_name}"
+        :return: None, showing hist plot
+        """
+
         if df is None:
             df = self.df
         sns.histplot(df[df["payer"] == "yes"], x=column)
@@ -57,6 +76,11 @@ class DiagramCreator:
         plt.show()
 
     def hist_of_payers_by_time(self, df: pd.DataFrame | None = None) -> None:
+        """
+        :param df: pd.DataFrame
+        :return: None, showing hist plot
+        """
+
         if df is None:
             df = self.df
 

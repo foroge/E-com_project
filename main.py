@@ -104,10 +104,12 @@ def fit_transform(train: pd.DataFrame, test: pd.DataFrame, _ohe: OneHotEncoder, 
     # _ohe.fit(x_train[[column]])
     # pd.Series.value_counts()
     # print(_ohe.fit_transform(x_train[[column]].values).toarray())
-    train_new = pd.DataFrame(_ohe.fit_transform(train[[column]]), columns=_ohe.categories_, index=train.index)
-    train_other_cols = train.drop(columns=column)
-    train = pd.concat([train_new, train_other_cols], axis=1)
+    train_new = pd.DataFrame(_ohe.fit_transform(train[[column]]),
+                             columns=_ohe.categories_, index=train.index)  # получаем закодированную версию колонки
+    train_other_cols = train.drop(columns=column)  # получаем остальные колнки
+    train = pd.concat([train_new, train_other_cols], axis=1)  # соединение новых значений и старых
 
+    # аналогично
     test_new = pd.DataFrame(_ohe.fit_transform(test[[column]]), columns=_ohe.categories_, index=test.index)
     test_other_cols = test.drop(columns=column)
     test = pd.concat([test_new, test_other_cols], axis=1)
@@ -194,7 +196,7 @@ for col in ['region', 'device', 'channel']:
 
 
 # Расчеты
-# calculator = Calculator(df)
+calculator = Calculator(df)
 # calculator.print_mean_sum_with_and_without_payers()
 # calculator.print_session_duration_by_column(column="channel", russian_name="Рекламный канал")
 # calculator.print_session_duration_by_column(column="device", russian_name="Девайс")
@@ -203,7 +205,7 @@ for col in ['region', 'device', 'channel']:
 # calculator.print_top3_sum_by_column(column="region", russian_name="Регион")
 # calculator.print_mean_purchase_count_by_1_customer()
 # calculator.print_top3_months_mean_sum_by_column(column="region", russian_name="регионам")
-# calculator.print_top3_mau_column(column="channel", russian_name="рекламным каналам")
+calculator.print_top3_mau_column(column="channel", russian_name="рекламным каналам")
 # calculator.print_summary_table()
 
 # Графики

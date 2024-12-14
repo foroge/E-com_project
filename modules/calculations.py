@@ -20,6 +20,13 @@ class Calculator:
         self.df = data
 
     def calculate_mean_sum(self, df: pd.DataFrame | None = None, column: str = "", value: str = "") -> (float, float):
+        """
+        :param df: pd.DataFrame
+        :param column: Федя тут
+        :param value: тут
+        :return: и тут напиши
+        """
+
         if df is None:
             df = self.df
         if column and value:
@@ -31,6 +38,12 @@ class Calculator:
         return round(payer_mean, 2), round(all_mean, 2)
 
     def top_3_mean(self, df: pd.DataFrame | None = None, column: str = "") -> (list, list):
+        """
+        :param df: pd.DataFrame
+        :param column: Федя тут
+        :return: и тут напиши
+        """
+
         if df is None:
             df = self.df
         mean_check_payer_column = list()
@@ -45,6 +58,12 @@ class Calculator:
         return mean_check_payer_column, mean_check_all_column
 
     def calculate_mau_by_column(self, df: pd.DataFrame | None = None, column: str | None = None) -> pd.Series:
+        """
+        :param df: pd.DataFrame
+        :param column: column for groupping
+        :return: mau grouped by months and column
+        """
+
         if df is None:
             df = self.df
         if column is None:
@@ -52,6 +71,12 @@ class Calculator:
         return df.groupby([df["session_date"].dt.month, column])["user_id"].nunique()
 
     def print_mean_sum_with_and_without_payers(self, df: pd.DataFrame | None = None, print_line: bool = True) -> None:
+        """
+        :param df: pd.DataFrame
+        :param print_line: if ``True`` prints dividing line at the end
+        :return: None, prints mean sum with and without payers
+        """
+
         if df is None:
             payer_check_mean, all_check_mean = self.calculate_mean_sum()
         else:
@@ -63,6 +88,14 @@ class Calculator:
 
     def print_session_duration_by_column(self, df: pd.DataFrame | None = None, column: str = "", russian_name: str = "",
                                          print_line: bool = True) -> None:
+        """
+        :param df: pd.DataFrame
+        :param column: column for grouping
+        :param russian_name: column name in russian
+        :param print_line: if ``True`` prints dividing line at the end
+        :return: None, prints session duration grouped by column
+        """
+
         if df is None:
             df = self.df
         print(f"Продолжительность сессии по {russian_name}\n")
@@ -78,9 +111,23 @@ class Calculator:
     def print_top3_sum_by_column(self, df: pd.DataFrame | None = None, column: str = "", payer: bool | None = None,
                                  russian_name: str = "", print_line: bool = True) -> None:
         """
+        :param df: pd.DataFrame
+        :param column: column for grouping
+        :param payer:
+        if ``True`` prints only payers
+        if ``False`` prints only not-payers
+        if ``None`` prints both payers and not-payers
+
+        :param russian_name: column name in russian
+        :param print_line: if ``True`` prints dividing line at the end
+        :return: None, prints top-3 sum grouped by column
+        """
+
+        """
         payer is None -> вывести с учетом платящих и неплатящих
         payer is False -> вывести только с учетом неплатящих
-        payer is True -> вывести только с учетом плятящих"""
+        payer is True -> вывести только с учетом плятящих
+        """
         if df is None:
             mean_check_payer, mean_check_all = self.top_3_mean(column=column)
         else:
@@ -100,6 +147,12 @@ class Calculator:
             print('\u2501' * 50, "\n")
 
     def print_mean_purchase_count_by_1_customer(self, df: pd.DataFrame | None = None, print_line: bool = True) -> None:
+        """
+        :param df: pd.DataFrame
+        :param print_line: if ``True`` prints dividing line at the end
+        :return: None, prints mean count of purchases made by one customer
+        """
+
         if df is None:
             df = self.df
         payers = df[df["payer"] == "yes"]["user_id"].value_counts()
@@ -112,6 +165,14 @@ class Calculator:
 
     def print_top3_months_mean_sum_by_column(self, df: pd.DataFrame | None = None, column: str | None = None,
                                              print_line: bool = True, russian_name: str | None = None) -> None:
+        """
+        :param df: pd.DataFrame
+        :param column: column for grouping
+        :param russian_name: column name in russian
+        :param print_line: if ``True`` prints dividing line at the end
+        :return: None, prints top-3 months by mean sum grouped by column
+        """
+
         if df is None:
             df = self.df
         if column is None:
@@ -137,6 +198,14 @@ class Calculator:
 
     def print_top3_mau_column(self, df: pd.DataFrame | None = None, column: str | None = None,
                               russian_name: str | None = None, print_line: bool = True) -> None:
+        """
+         :param df: pd.DataFrame
+         :param column: column for groups
+         :param russian_name: used for printing f"Топ-3 месяцев по MAU по {russian_name}"
+         :param print_line: if ``True`` prints dividing line at the end
+         :return: None, prints top-3 in each group in column
+         """
+
         all_mau = self.calculate_mau_by_column(df=df, column=column).to_frame().reset_index().set_index("session_date")
         if column is None:
             print(f"Топ-3 месяцев по MAU")
@@ -159,6 +228,12 @@ class Calculator:
             print('\u2501' * 50, "\n")
 
     def print_summary_table(self, df: pd.DataFrame | None = None, print_line: bool = True) -> None:
+        """
+        :param df: pd.DataFrame
+        :param print_line: if ``True`` prints dividing line at the end
+        :return: None, prints pivot table and channel with max paying users and channel with max total sum
+        """
+
         if df is None:
             df = self.df
         summary_table = df.groupby("channel").agg(
