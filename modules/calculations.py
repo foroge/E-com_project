@@ -70,10 +70,12 @@ class Calculator:
             return df.groupby(df["session_date"].dt.month)["user_id"].nunique()
         return df.groupby([df["session_date"].dt.month, column])["user_id"].nunique()
 
-    def print_mean_sum_with_and_without_payers(self, df: pd.DataFrame | None = None, print_line: bool = True) -> None:
+    def print_mean_sum_with_and_without_payers(self, df: pd.DataFrame | None = None, print_line: bool = True,
+                                               round_signs: int = 0) -> None:
         """
         :param df: pd.DataFrame
         :param print_line: if ``True`` prints dividing line at the end
+        :param round_signs: how many signs after comma will be printed
         :return: None, prints mean sum with and without payers
         """
 
@@ -81,8 +83,10 @@ class Calculator:
             payer_check_mean, all_check_mean = self.calculate_mean_sum()
         else:
             payer_check_mean, all_check_mean = self.calculate_mean_sum(df)
-        print(f"Средний чек с учетом неплатящих: {all_check_mean}")
-        print(f"Средний чек без учета неплатящих: {payer_check_mean}")
+        print(f"Средний чек с учетом неплатящих: "
+              f"{round(all_check_mean, round_signs) if round_signs != 0 else round(all_check_mean)}")
+        print(f"Средний чек без учета неплатящих: "
+              f"{round(payer_check_mean, round_signs) if round_signs != 0 else round(payer_check_mean)}")
         if print_line:
             print('\u2501' * 50, "\n")
 
@@ -109,10 +113,11 @@ class Calculator:
             print('\u2501' * 50, "\n")
 
     def print_top3_sum_by_column(self, df: pd.DataFrame | None = None, column: str = "", payer: bool | None = None,
-                                 russian_name: str = "", print_line: bool = True) -> None:
+                                 russian_name: str = "", print_line: bool = True, round_signs: int = 0) -> None:
         """
         :param df: pd.DataFrame
         :param column: column for grouping
+
         :param payer:
         if ``True`` prints only payers
         if ``False`` prints only not-payers
@@ -120,6 +125,7 @@ class Calculator:
 
         :param russian_name: column name in russian
         :param print_line: if ``True`` prints dividing line at the end
+        :param round_signs: how many signs after comma will be printed
         :return: None, prints top-3 sum grouped by column
         """
 
@@ -136,12 +142,14 @@ class Calculator:
         if payer is None or payer is False:
             print(f"Топ 3 средний чек с учетом неплатящих по {russian_name}\n")
             for mean in mean_check_all:
-                print(f"{russian_name}: {mean[0]}\nСумма чека: {mean[1]}")
+                print(f"{russian_name}: {mean[0]}\n"
+                      f"Сумма чека: {round(mean[1], round_signs) if round_signs != 0 else round(mean[1])}")
                 print('\u2500' * 10)
         if payer is None or payer is True:
             print(f"Топ 3 средний чек с учетом платящих по {russian_name}\n")
             for mean in mean_check_payer:
-                print(f"{russian_name}: {mean[0]}\nСумма чека: {mean[1]}")
+                print(f"{russian_name}: {mean[0]}\n"
+                      f"Сумма чека: {round(mean[1], round_signs) if round_signs != 0 else round(mean[1])}")
                 print('\u2500' * 10)
         if print_line:
             print('\u2501' * 50, "\n")
@@ -164,12 +172,14 @@ class Calculator:
             print('\u2501' * 50, "\n")
 
     def print_top3_months_mean_sum_by_column(self, df: pd.DataFrame | None = None, column: str | None = None,
-                                             print_line: bool = True, russian_name: str | None = None) -> None:
+                                             print_line: bool = True, russian_name: str | None = None,
+                                             round_signs: int = 0) -> None:
         """
         :param df: pd.DataFrame
         :param column: column for grouping
         :param russian_name: column name in russian
         :param print_line: if ``True`` prints dividing line at the end
+        :param round_signs: how many signs after comma will be printed
         :return: None, prints top-3 months by mean sum grouped by column
         """
 
@@ -180,7 +190,8 @@ class Calculator:
             all_mean = df.groupby(df["session_date"].dt.month)["sum"].agg("mean").to_frame().reset_index()
             top_as_dict = all_mean.nlargest(3, "sum").set_index("session_date").to_dict()["sum"]
             for key in top_as_dict:
-                print(to_string_month(key), round(top_as_dict[key], 2))
+                print(to_string_month(key),
+                      round(top_as_dict[key], round_signs) if round_signs != 0 else round(top_as_dict[key]))
         else:
             print(f"Топ-3 месяцев по среднему чеку по {russian_name if russian_name else (column if column else "")}")
             all_mean = df.groupby([column, df["session_date"].dt.month])["sum"].agg("mean").to_frame().reset_index()
@@ -191,7 +202,8 @@ class Calculator:
                 top_as_dict = all_mean[all_mean[column] == group].nlargest(3, "sum").drop(column, axis=1)
                 top_as_dict = top_as_dict.set_index("session_date").to_dict()["sum"]
                 for key in top_as_dict:
-                    print(to_string_month(key), round(top_as_dict[key], 2))
+                    print(to_string_month(key),
+                          round(top_as_dict[key], round_signs) if round_signs != 0 else round(top_as_dict[key]))
                 print('\u2500' * 10)
         if print_line:
             print('\u2501' * 50, "\n")
@@ -243,6 +255,7 @@ class Calculator:
             total_revenue=("revenue", "sum")
         ).reset_index()
 
+        summary_table["total_revenue"] = summary_table["total_revenue"].astype(int)
         print(summary_table)
         print('\u2500' * 10)
         max_payer_user = summary_table.loc[summary_table['total_users'].idxmax(), "channel"]

@@ -121,10 +121,10 @@ def fit_transform(train: pd.DataFrame, test: pd.DataFrame, _ohe: OneHotEncoder, 
 
 
 def print_metrics_model(fact: pd.DataFrame, predict: np.ndarray) -> None:
-    print(f"R2 = {round(r2_score(fact, predict), 3)}")
-    print(f"MAPE = {round(mean_absolute_percentage_error(fact, predict) * 100, 2)}")
-    print(f"MAE = {round(mean_absolute_error(fact, predict), 2)}")
-    print(f"RMSE = {round(mean_squared_error(fact, predict) ** 0.5, 2)}")
+    print(f"R2 = {round(r2_score(fact, predict), 4)}")
+    print(f"MAPE = {round(mean_absolute_percentage_error(fact, predict) * 100, -18)}")
+    print(f"MAE = {round(mean_absolute_error(fact, predict))}")
+    print(f"RMSE = {round(mean_squared_error(fact, predict) ** 0.5)}")
 
 
 df = pd.read_csv("./data/data.csv", encoding="utf-8", sep=",")
@@ -252,13 +252,18 @@ for col in ['region', 'device', 'channel']:
 #
 # print(f"Были выбраны шкалы {", ".join(selling_columns_cat)}, {", ".join(selling_columns_num)}, "
 #       f"потому что они должны влиять на суммы продаж\n")
+
 # print("Метрики модели")
 # print_metrics_model(y_test, prediction)
-# prediction = pd.concat([x_test_orig.reset_index(drop=True), pd.DataFrame(prediction)], axis=1)
 # print("\u2500" * 10)
+
+# prediction = pd.concat([x_test_orig.reset_index(drop=True), pd.DataFrame(prediction)], axis=1)
+# prediction[0] = prediction[0].astype(int)
+
 # print("Первые 5 значений предсказания для тестовой выборки:")
 # print(prediction.head().rename({0: "revenue"}, axis=1))
 # print("\u2500" * 10)
+
 # print("Максимальные значения дохода для групп в предсказании:")
 # print(prediction.groupby(selling_columns_cat + selling_columns_num).agg("max")
 #       .sort_values(0).rename({0: "max_revenue"}, axis=1))
@@ -281,15 +286,14 @@ for col in ['region', 'device', 'channel']:
 #     plt.show()
 
 
-
-
-
 # print()
 # print(df.groupby(["region", "channel"])["sum"].agg("mean").sort_values())
 # print()
-# print(pd.concat([x_test_orig.reset_index(drop=True), y_test.reset_index()], axis=1).groupby(["region", "channel"])["sum"].agg("max").sort_values())
+# print(pd.concat([x_test_orig.reset_index(drop=True),
+#                  y_test.reset_index()], axis=1).groupby(["region", "channel"])["sum"].agg("max").sort_values())
 # print()
-# print(pd.concat([x_train_orig.reset_index(drop=True), y_train.reset_index()], axis=1).groupby(["region", "channel"])["sum"].agg("max").sort_values())
+# print(pd.concat([x_train_orig.reset_index(drop=True),
+#                  y_train.reset_index()], axis=1).groupby(["region", "channel"])["sum"].agg("max").sort_values())
 
 # print(prediction[prediction["channel"] == "социальные сети"][0].value_counts())
 # max_of_predict = prediction.max().to_frame().T[0].values[0]
