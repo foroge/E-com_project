@@ -22,9 +22,9 @@ class Calculator:
     def calculate_mean_sum(self, df: pd.DataFrame | None = None, column: str = "", value: str = "") -> (float, float):
         """
         :param df: pd.DataFrame
-        :param column: Федя тут
-        :param value: тут
-        :return: и тут напиши
+        :param column: столбец для формирования среднего чека по группам этого столбца
+        :param value: одно из значений столбца, по которому формируется группа
+        :return: средний чек у платящих, средний чек у всех
         """
 
         if df is None:
@@ -40,8 +40,8 @@ class Calculator:
     def top_3_mean(self, df: pd.DataFrame | None = None, column: str = "") -> (list, list):
         """
         :param df: pd.DataFrame
-        :param column: Федя тут
-        :return: и тут напиши
+        :param column: Столбец по которому будут формироваться группы для расчёта среднего чека
+        :return: 3 группы с самым высоким средним чеком у платящих и у всех
         """
 
         if df is None:
