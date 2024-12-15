@@ -229,8 +229,6 @@ for col in ['region', 'device', 'channel']:
 # print("т.к. p-value больше 0.05, альтернативную гипотезу принимать нельзя")
 
 
-
-
 # selling_columns_cat = ["region", "channel"]
 # selling_columns_num = []
 # x_train, x_test, y_train, y_test = train_test_split(df[selling_columns_cat + selling_columns_num],
