@@ -83,7 +83,7 @@ def duration_of_the_purchase(data: pd.DataFrame, h0: str, h1: str, column: str) 
     :param h0: Нулевая гипотеза
     :param h1: Альтернативная гипотеза
     :param column: Название столбца, по которому проверяется гипотеза
-    :return:
+    :return: None, выводятся результаты и комментарии к ним
     """
     print(f"Проверка гипотезы: '{h0}'\nс альтернативной гипозетой: '{h1}'")
     print('\u2500' * 10)
@@ -263,6 +263,7 @@ def numeric_and_numeric(br: pd.Series, gd: pd.Series, rnd: int = 4) -> str:
         return count_spearman(br, gd, rnd)
 
 
+# Проверка гипотезы о влиянии продолжительности сессии на платежеспособность
 def numeric_and_numeric_hypo(br: pd.Series, gd: pd.Series, h0: str, h1: str):
     """
     :param br: Данные для рассчета корреляции

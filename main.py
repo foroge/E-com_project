@@ -10,12 +10,11 @@ from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error, m
 from modules.preload_data import fill_na, fill_errors
 from modules.calculations import calculate_normal_time, Calculator
 from modules.diagrams import DiagramCreator
-from modules.hypotheses import kruskal_test_region, check_avg_revenue_hypotheses
+from modules.hypotheses import check_avg_num_of_purchases, check_avg_revenue_hypotheses
 from scipy.stats import shapiro, kruskal
-from modules.hypotheses import kruskal_test_region, numeric_and_numeric_hypo
+from modules.hypotheses import numeric_and_numeric_hypo
 from modules.hypotheses import duration_of_the_purchase
 from modules.hypotheses import duration_depends_on_the_payment_type
-from modules.hypotheses import duration_depends_on_the_pay_or_no
 from modules.criterions import MetricModel
 from scipy.stats import shapiro
 import matplotlib.pyplot as plt
@@ -154,11 +153,11 @@ new_df_dub = df[df["user_id"].isin(df["user_id"][df["user_id"].duplicated()])].s
 for col in ['region', 'device', 'channel']:
     df = fill_na(df, column=col, method='mode')
 
-# kruskal_test_region(df, "Среднее количество покупок в день одинаково со всеми устройствами",
+# check_avg_num_of_purchases(df, "Среднее количество покупок в день одинаково со всеми устройствами",
 #                     "Среднее количество покупок в день различается в зависимости от типа устройства",
 #                     'device')
 # # Различий между средним количеством покупок в день одинаково независимо от типа устройства во всех регионах
-# kruskal_test_region(df, "Среднее количество покупок в день одинаково в зависимости от типа рекламного канала",
+# check_avg_num_of_purchases(df, "Среднее количество покупок в день одинаково в зависимости от типа рекламного канала",
 #                     "Среднее количество покупок в день различается в зависимости от типа рекламного канала",
 #                     'channel')
 # Между средним количеством покупок в регионе United States есть различия, в зависимости от типа рекламного канала
@@ -177,9 +176,10 @@ for col in ['region', 'device', 'channel']:
 # duration_depends_on_the_payment_type(df, "Длительность сессии одинакова у пользователей с разными типами оплаты",
 #                                      "Длительность сессии различается у пользователей с разными типами оплаты",
 #                                      "payment_type")
-# duration_depends_on_the_pay_or_no(df, "Длительность сессии одинакова у платящих и не платящих пользователей",
-#                                   "Длительность сессии различается у платящих и не платящих пользователей",
-#                                   "payer")
+# duration_of_the_purchase(df, "Длительность сессии одинакова у платящих и неплатящих пользователей",
+#                          "Длительность сессии различается у платящих и неплатящих пользователей",
+                         # "payment_type")
+
 # print(df.T)
 # print(df[df["region"].isnull()])
 # print(df.isna().sum())
