@@ -55,7 +55,7 @@ def check_avg_num_of_purchases(data: pd.DataFrame, h0: str, h1: str, column: str
 # Проверка гипотезы о влиянии столбца на средний чек
 def check_avg_revenue_hypotheses(data: pd.DataFrame, h0: str, h1: str, column: str) -> None:
     """
-    :param data:
+    :param data: pd.DataFrame
     :param h0: Нулевая гипотеза
     :param h1: Альтернативная гипотеза
     :param column: Название столбца, по которому проверяется гипотеза
@@ -79,7 +79,7 @@ def check_avg_revenue_hypotheses(data: pd.DataFrame, h0: str, h1: str, column: s
 # Проверка гипотезы о влиянии совершения покупки на длительность сессии
 def duration_of_the_purchase(data: pd.DataFrame, h0: str, h1: str, column: str) -> None:
     """
-    :param data:
+    :param data: pd.DataFrame
     :param h0: Нулевая гипотеза
     :param h1: Альтернативная гипотеза
     :param column: Название столбца, по которому проверяется гипотеза
@@ -109,7 +109,7 @@ def duration_depends_on_the_payment_type(data: pd.DataFrame, h0: str, h1: str, c
     :param h0: Нулевая гипотеза
     :param h1: Альтернативная гипотеза
     :param column: Название столбца, по которому проверяется гипотеза
-    :return:
+    :return: None, выводятся результаты и комментарии к ним
     """
     print(f"Проверка гипотезы: '{h0}'\nс альтернативной гипозетой: '{h1}'")
     print('\u2500' * 10)
@@ -167,30 +167,32 @@ def quantitative_and_categorical(data: pd.DataFrame, category: str, quantitative
 
 
 # Расчет p-value для столбцов с 2-мя уровнями
-def quantitative_and_categorical_2(br: pd.DataFrame, gd: pd.DataFrame, rnd: int = 4):
+def quantitative_and_categorical_2(br: pd.DataFrame, gd: pd.DataFrame, prnt: bool = True, rnd: int = 4):
     """
-        :param data: pd.DataFrame
-        :param category: Название категориального столбца
-        :param quantitative: Название количественного столбца
-        :param rnd: До какого знака округление
-        :return: p-value по нужному критерию
+    :param br: Столбец с количественными данными
+    :param gd: Столбец с количественными данными
+    :param prnt: Выводить ли комментарий
+    :param rnd: До какого знака округление
+    :return: p-value по нужному критерию
     """
     if check_normal(br, 0.05) and check_normal(gd, 0.05):
-        print("Распределение нормальное, поэтому выбираем Т-критерий Стьюдента")
+        if prnt:
+            print("Распределение нормальное, поэтому выбираем Т-критерий Стьюдента")
         return float(round(ttest_ind(br, gd, alternative="two-sided").pvalue, rnd))
     else:
-        print("Распределение ненормальное, поэтому выбираем U-крпитерий Манны-Уитни")
+        if prnt:
+            print("Распределение ненормальное, поэтому выбираем U-крпитерий Манны-Уитни")
         return float(round(mannwhitneyu(br, gd, alternative="two-sided").pvalue, rnd))
 
 
 # Расчет p-value для столбцов с более чем 2-мя уровнями
 def quantitative_and_categorical_3(data: pd.DataFrame, category: str, quantitative: str, rnd: int = 4) -> float:
     """
-        :param data: pd.DataFrame
-        :param category: Название категориального столбца
-        :param quantitative: Название количественного столбца
-        :param rnd: До какого знака округление
-        :return: p-value по нужному критерию
+    :param data: pd.DataFrame
+    :param category: Название категориального столбца
+    :param quantitative: Название количественного столбца
+    :param rnd: До какого знака округление
+    :return: p-value по нужному критерию
     """
     unique = data[category].unique()
     columns = [data[data[category] == column][quantitative] for column in unique]
@@ -212,10 +214,14 @@ def pairwise_comparisons(data: pd.DataFrame, column: str, quantitative: str) -> 
     """
     head = ["p-value", "1 тип", "2 тип"]
     result = []
+    if check_normal(data[quantitative], 0.05):
+        print("Распределение нормальное, поэтому выбираем Т-критерий Стьюдента")
+    else:
+        print("Распределение ненормальное, поэтому выбираем U-крпитерий Манны-Уитни")
     for combination in combinations(data[column].unique(), 2):
         br = data[data[column] == combination[0]][quantitative]
         gd = data[data[column] == combination[1]][quantitative]
-        result.append([quantitative_and_categorical_2(br, gd), combination[0], combination[1]])
+        result.append([quantitative_and_categorical_2(br, gd, False), combination[0], combination[1]])
     return pd.DataFrame(result, columns=head)
 
 
