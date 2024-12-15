@@ -88,6 +88,10 @@ def fill_missing_with_dup(data: pd.DataFrame, rows: pd.Series, column: str) -> p
 
 
 def fill_missing_data_categorical(data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Заполняет пропуски в данных, когда у пользователя есть две записи,
+    потому что в одной из них точно будут пропущены колнки region, device и channel
+    """
     user_ids = data["user_id"].unique()
     for user_id in user_ids:
         if len(data[data["user_id"] == user_id]) == 1:
@@ -101,9 +105,16 @@ def fill_missing_data_categorical(data: pd.DataFrame) -> pd.DataFrame:
 
 def fit_transform(train: pd.DataFrame, test: pd.DataFrame, _ohe: OneHotEncoder, column: str = "") -> \
         (pd.DataFrame, pd.DataFrame):
-    # _ohe.fit(x_train[[column]])
-    # pd.Series.value_counts()
-    # print(_ohe.fit_transform(x_train[[column]].values).toarray())
+    """
+    Кодирует нужные категориальные колонки с помощью OneHotEncoder
+
+    :param train: train selection
+    :param test: test selection
+    :param _ohe: instance of OneHotEncoder class
+    :param column: column for encoding
+    :return: tuple of two dataframes with train and test selection which column was encoded
+    """
+
     train_new = pd.DataFrame(_ohe.fit_transform(train[[column]]),
                              columns=_ohe.categories_, index=train.index)  # получаем закодированную версию колонки
     train_other_cols = train.drop(columns=column)  # получаем остальные колнки
