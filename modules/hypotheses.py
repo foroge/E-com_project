@@ -63,8 +63,10 @@ def check_avg_revenue_hypotheses(data: pd.DataFrame, h0: str, h1: str, column: s
     """
     print(f"Проверка гипотезы: '{h0}'\nс альтернативной гипозетой: '{h1}'")
     print('\u2500' * 10)
-    new_data = data
-    p_value = quantitative_and_categorical(data, column, "sum")
+
+    mean_revenue_table = (data.groupby(column, as_index=False)["sum"].mean().rename(columns={"sum": "mean_revenue"}))
+
+    p_value = quantitative_and_categorical(mean_revenue_table, column, "mean_revenue")
     print(f"P-value = {p_value}")
     if p_value < 0.05:
         print(f"Принимаем альтернативную гипотезу: {h1}")
@@ -198,6 +200,7 @@ def quantitative_and_categorical_3(data: pd.DataFrame, category: str, quantitati
     else:
         print("Распределение ненормальное, поэтому выбираем Краскела-Уоллиса")
         return kruskal_test(columns, rnd)
+
 
 # Попарное сравнение двух столбцов
 def pairwise_comparisons(data: pd.DataFrame, column: str, quantitative: str) -> pd.DataFrame:
